@@ -11,28 +11,31 @@ import json
 import sys
 
 import sentry_sdk
+from genanki import Note
+from genanki.util import guid_for
+
+from fs_util import _read_template, _wr_apkg
+from models.basic import basic_model
+from models.cloze import cloze_model
+from models.input import input_model
 
 sentry_sdk.init(
     dsn="https://72be99d0475a4bfa9b0f24631571c96a@o1284472.ingest.sentry.io/6495216",
     traces_sample_rate=1.0
 )
 
-from genanki.util import guid_for
-from genanki import Note
 
-from fs_util import _read_template, _wr_apkg
-from models.input import input_model
-from models.cloze import cloze_model
-from models.basic import basic_model
-
-
-# Perserve the old ids for backwards compatability
 def model_id(name):
+    """
+    Preserve the old ids for backwards compatibility.
+    :param name:
+    :return:
+    """
     if name == "n2a-input":
         return 6394002335189144856
-    elif name == "n2a-cloze":
+    if name == "n2a-cloze":
         return 998877661
-    elif name == "n2a-basic":
+    if name == "n2a-basic":
         return 2020
     # https://stackoverflow.com/questions/16008670/how-to-hash-a-string-into-8-digits
     return abs(
@@ -55,7 +58,7 @@ if __name__ == "__main__":
 
         # Model / Template stuff
         mt = data[0]["settings"]
-        styling = data[0].get('style', "") or ""
+        STYLING = data[0].get('style', "") or ""
 
         # Retreive template names for user or get the default ones
         cloze_model_name = mt.get('clozeModelName', "n2a-cloze") or "n2a-cloze"
@@ -68,62 +71,75 @@ if __name__ == "__main__":
         basic_model_id = mt.get('basicModelId', model_id(basic_model_name))
         template = mt.get('template', 'specialstyle')
 
-        fmtClozeQ = fmtClozeA = None
-        fmtInputQ = fmtInputA = None
-        fmtQ = fmtA = None
+        FMT_CLOZE_QUESTION = FMT_CLOZE_ANSWER = None
+        FMT_INPUT_QUESTION = FMT_INPUT_ANSWER = None
+        FMT_QUESTION = FMT_ANSWER = None
 
         # Respect user's choice of template
         if template == 'specialstyle':
-            styling += _read_template(template_dir, "custom.css", "", "")
+            STYLING += _read_template(template_dir, "custom.css", "", "")
         elif template == 'nostyle':
-            styling = ""
+            STYLING = ""
         elif template == 'abhiyan':
-            styling = _read_template(template_dir, 'abhiyan.css', "", "")
+            STYLING = _read_template(template_dir, 'abhiyan.css', "", "")
             CLOZE_STYLE = _read_template(template_dir,
                                          "abhiyan_cloze_style.css", "", "")
-            fmtClozeQ = _read_template(template_dir, "abhiyan_cloze_front.html",
-                                       "", "")
-            fmtClozeA = _read_template(template_dir, "abhiyan_cloze_back.html",
-                                       "", "")
-            fmtQ = _read_template(template_dir, "abhiyan_basic_front.html", "",
-                                  "")
-            fmtA = _read_template(template_dir, "abhiyan_basic_back.html", "",
-                                  "")
-            fmtInputQ = _read_template(template_dir, "abhiyan_input_front.html",
-                                       "", "")
-            fmtInputA = _read_template(template_dir, "abhiyan_basic_back.html",
-                                       "",
-                                       "")  # Note: reusing the basic back, essentially the same.
+            FMT_CLOZE_QUESTION = _read_template(template_dir,
+                                                "abhiyan_cloze_front.html",
+                                                "", "")
+            FMT_CLOZE_ANSWER = _read_template(template_dir,
+                                              "abhiyan_cloze_back.html",
+                                              "", "")
+            FMT_QUESTION = _read_template(template_dir,
+                                          "abhiyan_basic_front.html", "",
+                                          "")
+            FMT_ANSWER = _read_template(template_dir, "abhiyan_basic_back.html",
+                                        "",
+                                        "")
+            FMT_INPUT_QUESTION = _read_template(template_dir,
+                                                "abhiyan_input_front.html",
+                                                "", "")
+            # Note: reusing the basic back, essentially the same.
+            FMT_INPUT_ANSWER = _read_template(template_dir,
+                                              "abhiyan_basic_back.html",
+                                              "",
+                                              "")
         elif template == 'alex_deluxe':
-            styling = _read_template(template_dir, 'alex_deluxe.css', "", "")
+            STYLING = _read_template(template_dir, 'alex_deluxe.css', "", "")
             CLOZE_STYLE = _read_template(template_dir,
                                          "alex_deluxe_cloze_style.css", "", "")
-            fmtClozeQ = _read_template(template_dir,
-                                       "alex_deluxe_cloze_front.html", "", "")
-            fmtClozeA = _read_template(template_dir,
-                                       "alex_deluxe_cloze_back.html", "", "")
-            fmtQ = _read_template(template_dir, "alex_deluxe_basic_front.html",
-                                  "", "")
-            fmtA = _read_template(template_dir, "alex_deluxe_basic_back.html",
-                                  "", "")
-            fmtInputQ = _read_template(template_dir,
-                                       "alex_deluxe_input_front.html", "", "")
-            fmtInputA = _read_template(template_dir,
-                                       "alex_deluxe_input_back.html", "", "")
+            FMT_CLOZE_QUESTION = _read_template(template_dir,
+                                                "alex_deluxe_cloze_front.html",
+                                                "", "")
+            FMT_CLOZE_ANSWER = _read_template(template_dir,
+                                              "alex_deluxe_cloze_back.html", "",
+                                              "")
+            FMT_QUESTION = _read_template(template_dir,
+                                          "alex_deluxe_basic_front.html",
+                                          "", "")
+            FMT_ANSWER = _read_template(template_dir,
+                                        "alex_deluxe_basic_back.html",
+                                        "", "")
+            FMT_INPUT_QUESTION = _read_template(template_dir,
+                                                "alex_deluxe_input_front.html",
+                                                "", "")
+            FMT_INPUT_ANSWER = _read_template(template_dir,
+                                              "alex_deluxe_input_back.html", "",
+                                              "")
         # else notionstyle
-        CLOZE_STYLE = CLOZE_STYLE + "\n" + styling
+        CLOZE_STYLE = CLOZE_STYLE + "\n" + STYLING
 
-        BASIC_STYLE = styling
-        BASIC_FRONT = fmtQ
-        BASIC_BACK = fmtA
+        BASIC_STYLE = STYLING
+        BASIC_FRONT = FMT_QUESTION
+        BASIC_BACK = FMT_ANSWER
         n2aBasic = mt.get("n2aBasic")
         if n2aBasic:
             BASIC_STYLE = n2aBasic["styling"]
             BASIC_FRONT = n2aBasic["front"]
             BASIC_BACK = n2aBasic["back"]
 
-        CLOZE_FRONT = fmtClozeQ
-        CLOZE_BACK = fmtClozeA
+        CLOZE_FRONT = FMT_CLOZE_QUESTION
+        CLOZE_BACK = FMT_CLOZE_ANSWER
         n2aCloze = mt.get("n2aCloze")
         if n2aCloze:
             CLOZE_STYLE = n2aCloze["styling"]
@@ -131,9 +147,9 @@ if __name__ == "__main__":
             CLOZE_BACK = n2aCloze["back"]
 
         n2aInput = mt.get("n2aInput")
-        INPUT_FRONT = fmtInputQ
-        INPUT_BACK = fmtInputA
-        INPUT_STYLE = styling
+        INPUT_FRONT = FMT_INPUT_QUESTION
+        INPUT_BACK = FMT_INPUT_ANSWER
+        INPUT_STYLE = STYLING
         if n2aInput:
             INPUT_STYLE = n2aInput["styling"]
             INPUT_FRONT = n2aInput["front"]
@@ -159,15 +175,17 @@ if __name__ == "__main__":
                         card["answer"],
                         ",".join(card["media"]),
                     ]
-                # Cards marked with -1 number means they are breaking compatability, treat them differently by using their respective Notion Id
+                # Cards marked with -1 number means they are breaking
+                # compatability, treat them differently by using their
+                # respective Notion Id.
                 if card["number"] == -1 and "notionId" in card:
                     card["number"] = card["notionId"]
 
                 if mt.get("useNotionId") and "notionId" in card:
-                    g = guid_for(card["notionId"])
+                    GUID = guid_for(card["notionId"])
                     my_note = Note(model, fields=fields,
                                    sort_field=card["number"], tags=card['tags'],
-                                   guid=g)
+                                   guid=GUID)
                     notes.append(my_note)
                 else:
                     my_note = Note(model, fields=fields,

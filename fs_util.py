@@ -1,3 +1,6 @@
+"""
+utility functions
+"""
 import os
 import sys
 
@@ -9,11 +12,12 @@ def _wr_apkg(payload, media_files):
     first_id = ""
     decks = []
 
-    for p in payload:
-        deck = Deck(deck_id=p["id"], name=p["name"], description=p["desc"])
+    for deck_payload in payload:
+        deck = Deck(deck_id=deck_payload["id"], name=deck_payload["name"],
+                    description=deck_payload["desc"])
         if not first_id:
-            first_id = p["id"]
-        for note in p["notes"]:
+            first_id = deck_payload["id"]
+        for note in deck_payload["notes"]:
             deck.add_note(note)
         decks.append(deck)
 
@@ -28,11 +32,14 @@ def _wr_apkg(payload, media_files):
 def _path_start():
     if sys.platform == "win32":
         return "C:"
-    else:
-        return "/"
+    return "/"
 
 
 def get_template_path():
+    """
+    helper to find path to the server's template directory
+    :return:
+    """
     return os.path.dirname(__file__) + "/../server/src/templates/"
 
 
@@ -41,8 +48,7 @@ def _read_template(template_dir, path, fmt, value):
     with open(file_path, "r", encoding="utf-8") as file:
         if fmt and value:
             return file.read().replace(fmt, value)
-        else:
-            return file.read()
+        return file.read()
 
 
 def _build_deck_description(template_dir, image):

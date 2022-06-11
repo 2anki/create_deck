@@ -13,6 +13,15 @@ DEFAULT_INPUT = json.loads(
 
 
 def input_model(model_id, name, css, qfmt, afmt):
+    """
+    The input note type
+    :param model_id: model id
+    :param name: note name
+    :param css: note styling
+    :param qfmt: note front markup
+    :param afmt: note back markup
+    :return: Note model
+    """
     if qfmt is None:
         qfmt = DEFAULT_INPUT.get("front")
     if afmt is None:

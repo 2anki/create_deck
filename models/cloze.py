@@ -13,7 +13,7 @@ DEFAULT_CLOZE = json.loads(
 
 def cloze_model(model_id, name, css, qfmt, afmt):
     """
-    The basic note type
+    The cloze note type
     :param model_id: model id
     :param name: note name
     :param css: note styling
