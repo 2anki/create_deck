@@ -1,11 +1,11 @@
 """
-utility functions
+Write APKG file to disk
 """
+
 import os
 import sys
 
-from genanki import Deck
-from genanki import Package
+from genanki import Deck, Package
 
 
 def _wr_apkg(payload, media_files):
@@ -27,21 +27,3 @@ def _wr_apkg(payload, media_files):
 
     pkg.write_to_file(fout_anki)
     sys.stdout.write(os.getcwd() + "/" + fout_anki)
-
-
-def _path_start():
-    if sys.platform == "win32":
-        return "C:"
-    return "/"
-
-
-def _read_template(template_dir, path, fmt, value):
-    file_path = path if path.startswith(_path_start()) else template_dir + path
-    with open(file_path, "r", encoding="utf-8") as file:
-        if fmt and value:
-            return file.read().replace(fmt, value)
-        return file.read()
-
-
-def _build_deck_description(template_dir, image):
-    return _read_template(template_dir, "deck_description.html", "%s", image)
