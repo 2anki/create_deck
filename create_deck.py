@@ -11,6 +11,11 @@ import json
 import sys
 
 import sentry_sdk
+sentry_sdk.init(
+    dsn="https://72be99d0475a4bfa9b0f24631571c96a@o1284472.ingest.sentry.io/6495216",
+    traces_sample_rate=1.0
+)
+
 from genanki.util import guid_for
 from genanki import Note
 
@@ -19,10 +24,6 @@ from models.input import input_model
 from models.cloze import cloze_model
 from models.basic import basic_model
 
-sentry_sdk.init(
-    "https://a836d36ba5174e72b7d90ebb6da0c1ef@o404766.ingest.sentry.io/6340010",
-    traces_sample_rate=1.0
-)
 
 # Perserve the old ids for backwards compatability
 def model_id(name):
