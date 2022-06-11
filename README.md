@@ -5,7 +5,8 @@ This module is responsible for creating Anki flashcards for 2anki.net.
 ## API
 
 The current implementation is CLI driven. [create_deck](./create_deck.py) is
-to be executed with two arguments: absolute path to a JSON payload and the workspace directory.
+to be executed with two arguments: absolute path to a JSON payload and template directory.
+Note that the working directory has to be the workspace directory (location of payload).
 
 Here is an example execution
 ```bash
