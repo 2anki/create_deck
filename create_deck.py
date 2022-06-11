@@ -15,9 +15,7 @@ from genanki import Note
 from genanki.util import guid_for
 
 from fs_util import _read_template, _wr_apkg
-from models.basic import basic_model
-from models.cloze import cloze_model
-from models.input import input_model
+from helpers.get_model import get_model
 
 sentry_sdk.init(
     dsn="https://72be99d0475a4bfa9b0f24631571c96a@o1284472.ingest.sentry.io/6495216",
@@ -160,15 +158,17 @@ if __name__ == "__main__":
             notes = []
             for card in cards:
                 fields = [card["name"], card["back"], ",".join(card["media"])]
-                model = basic_model(basic_model_id, basic_model_name,
-                                    BASIC_STYLE, BASIC_FRONT, BASIC_BACK)
+                model = get_model(("basic", basic_model_id, basic_model_name,
+                                   BASIC_STYLE, BASIC_FRONT, BASIC_BACK))
                 if card.get('cloze', False) and "{{c" in card["name"]:
-                    model = cloze_model(cloze_model_id, cloze_model_name,
-                                        CLOZE_STYLE, CLOZE_FRONT, CLOZE_BACK)
+                    model = get_model(
+                        ("cloze", cloze_model_id, cloze_model_name,
+                         CLOZE_STYLE, CLOZE_FRONT, CLOZE_BACK))
                 elif card.get('enableInput', False) and card.get('answer',
                                                                  False):
-                    model = input_model(input_model_id, input_model_name,
-                                        INPUT_STYLE, INPUT_FRONT, INPUT_BACK)
+                    model = get_model(
+                        ("input", input_model_id, input_model_name,
+                         INPUT_STYLE, INPUT_FRONT, INPUT_BACK))
                     fields = [
                         card["name"].replace("{{type:Input}}", ""),
                         card["back"],
