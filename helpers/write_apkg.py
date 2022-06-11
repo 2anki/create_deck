@@ -23,7 +23,7 @@ def _wr_apkg(payload, media_files):
 
     pkg = Package(decks)
     pkg.media_files = media_files
-    fout_anki = "{NAME}.apkg".format(NAME=first_id)
+    fout_anki = f'{first_id}.apkg'
 
     pkg.write_to_file(fout_anki)
     sys.stdout.write(os.getcwd() + "/" + fout_anki)
