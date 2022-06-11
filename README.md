@@ -4,11 +4,12 @@ This module is responsible for creating Anki flashcards for 2anki.net.
 
 ## API
 
-The current implementation is CLI driven. [create_deck](./create_deck.py) is
-to be executed with two arguments: absolute path to a JSON payload and template directory.
-Note that the working directory has to be the workspace directory (location of payload).
+The current implementation is CLI driven. [create_deck](./create_deck.py) is to be executed with two arguments: absolute
+path to a JSON payload and template directory. Note that the working directory has to be the workspace directory (
+location of payload).
 
 Here is an example execution
+
 ```bash
 $ cd /tmp/w/9dOax-Y1fhrsmZxPad5g5
 $ ./create_deck.py \
@@ -17,8 +18,8 @@ $ ./create_deck.py \
 ```
 
 Here is the workspace directory (stripped long filenames)
-As you can see above there are also media files in here.
-The APKG file is created based on the contents of deck_info.json.
+As you can see above there are also media files in here. The APKG file is created based on the contents of
+deck_info.json.
 
 ```
 /tmp/w/9dOax-Y1fhrsmZxPad5g5
@@ -38,6 +39,7 @@ Inside the deck_info.json is an array of decks.
 
 The deck object consists of settings (object), name (string), cards (array), image (string), style (string):
 https://github.com/2anki/server/blob/main/src/lib/parser/Deck.ts
+
 ```typescript
 class Deck {
   name: string;
@@ -51,10 +53,11 @@ class Deck {
 
 #### Note
 
-The note type here is not exactly the same as in Anki. It is a mix between flashcards, notes and other 
-2anki implementation details. create_deck will use this structure to generate the flashcards.
+The note type here is not exactly the same as in Anki. It is a mix between flashcards, notes and other 2anki
+implementation details. create_deck will use this structure to generate the flashcards.
 
 https://github.com/2anki/server/blob/main/src/lib/parser/Note.ts
+
 ```typescript
 class Note {
   name: string;
@@ -76,6 +79,7 @@ One of the powerful things with 2anki is the flexibility it provides. With the s
 what a flashcard is.
 
 https://github.com/2anki/server/blob/main/src/lib/parser/Settings.ts
+
 ```typescript
 interface TemplateFile {
   parent: string;

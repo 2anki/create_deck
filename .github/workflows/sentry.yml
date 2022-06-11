@@ -1,7 +1,7 @@
 name: Sentry
 on:
   release:
-    types: [published]
+    types: [ published ]
 jobs:
   create-sentry-release:
     runs-on: ubuntu-latest
