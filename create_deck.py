@@ -35,12 +35,14 @@ def model_id(name):
     elif name == "n2a-basic":
         return 2020
     # https://stackoverflow.com/questions/16008670/how-to-hash-a-string-into-8-digits
-    return abs(int(hashlib.sha1(name.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
+    return abs(
+        int(hashlib.sha1(name.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        raise IOError('missing payload arguments(data file, deck style, template dir)')
+        raise IOError(
+            'missing payload arguments(data file, deck style, template dir)')
     data_file = sys.argv[1]
     template_dir = sys.argv[2]
 
@@ -77,23 +79,37 @@ if __name__ == "__main__":
             styling = ""
         elif template == 'abhiyan':
             styling = _read_template(template_dir, 'abhiyan.css', "", "")
-            CLOZE_STYLE = _read_template(template_dir, "abhiyan_cloze_style.css", "", "")
-            fmtClozeQ = _read_template(template_dir, "abhiyan_cloze_front.html", "", "")
-            fmtClozeA = _read_template(template_dir, "abhiyan_cloze_back.html", "", "")
-            fmtQ = _read_template(template_dir, "abhiyan_basic_front.html", "", "")
-            fmtA = _read_template(template_dir, "abhiyan_basic_back.html", "", "")
-            fmtInputQ = _read_template(template_dir, "abhiyan_input_front.html", "", "")
-            fmtInputA = _read_template(template_dir, "abhiyan_basic_back.html", "",
+            CLOZE_STYLE = _read_template(template_dir,
+                                         "abhiyan_cloze_style.css", "", "")
+            fmtClozeQ = _read_template(template_dir, "abhiyan_cloze_front.html",
+                                       "", "")
+            fmtClozeA = _read_template(template_dir, "abhiyan_cloze_back.html",
+                                       "", "")
+            fmtQ = _read_template(template_dir, "abhiyan_basic_front.html", "",
+                                  "")
+            fmtA = _read_template(template_dir, "abhiyan_basic_back.html", "",
+                                  "")
+            fmtInputQ = _read_template(template_dir, "abhiyan_input_front.html",
+                                       "", "")
+            fmtInputA = _read_template(template_dir, "abhiyan_basic_back.html",
+                                       "",
                                        "")  # Note: reusing the basic back, essentially the same.
         elif template == 'alex_deluxe':
             styling = _read_template(template_dir, 'alex_deluxe.css', "", "")
-            CLOZE_STYLE = _read_template(template_dir, "alex_deluxe_cloze_style.css", "", "")
-            fmtClozeQ = _read_template(template_dir, "alex_deluxe_cloze_front.html", "", "")
-            fmtClozeA = _read_template(template_dir, "alex_deluxe_cloze_back.html", "", "")
-            fmtQ = _read_template(template_dir, "alex_deluxe_basic_front.html", "", "")
-            fmtA = _read_template(template_dir, "alex_deluxe_basic_back.html", "", "")
-            fmtInputQ = _read_template(template_dir, "alex_deluxe_input_front.html", "", "")
-            fmtInputA = _read_template(template_dir, "alex_deluxe_input_back.html", "", "")
+            CLOZE_STYLE = _read_template(template_dir,
+                                         "alex_deluxe_cloze_style.css", "", "")
+            fmtClozeQ = _read_template(template_dir,
+                                       "alex_deluxe_cloze_front.html", "", "")
+            fmtClozeA = _read_template(template_dir,
+                                       "alex_deluxe_cloze_back.html", "", "")
+            fmtQ = _read_template(template_dir, "alex_deluxe_basic_front.html",
+                                  "", "")
+            fmtA = _read_template(template_dir, "alex_deluxe_basic_back.html",
+                                  "", "")
+            fmtInputQ = _read_template(template_dir,
+                                       "alex_deluxe_input_front.html", "", "")
+            fmtInputA = _read_template(template_dir,
+                                       "alex_deluxe_input_back.html", "", "")
         # else notionstyle
         CLOZE_STYLE = CLOZE_STYLE + "\n" + styling
 
@@ -128,11 +144,15 @@ if __name__ == "__main__":
             notes = []
             for card in cards:
                 fields = [card["name"], card["back"], ",".join(card["media"])]
-                model = basic_model(basic_model_id, basic_model_name, BASIC_STYLE, BASIC_FRONT, BASIC_BACK)
+                model = basic_model(basic_model_id, basic_model_name,
+                                    BASIC_STYLE, BASIC_FRONT, BASIC_BACK)
                 if card.get('cloze', False) and "{{c" in card["name"]:
-                    model = cloze_model(cloze_model_id, cloze_model_name, CLOZE_STYLE, CLOZE_FRONT, CLOZE_BACK)
-                elif card.get('enableInput', False) and card.get('answer', False):
-                    model = input_model(input_model_id, input_model_name, INPUT_STYLE, INPUT_FRONT, INPUT_BACK)
+                    model = cloze_model(cloze_model_id, cloze_model_name,
+                                        CLOZE_STYLE, CLOZE_FRONT, CLOZE_BACK)
+                elif card.get('enableInput', False) and card.get('answer',
+                                                                 False):
+                    model = input_model(input_model_id, input_model_name,
+                                        INPUT_STYLE, INPUT_FRONT, INPUT_BACK)
                     fields = [
                         card["name"].replace("{{type:Input}}", ""),
                         card["back"],
@@ -145,10 +165,13 @@ if __name__ == "__main__":
 
                 if mt.get("useNotionId") and "notionId" in card:
                     g = guid_for(card["notionId"])
-                    my_note = Note(model, fields=fields, sort_field=card["number"], tags=card['tags'], guid=g)
+                    my_note = Note(model, fields=fields,
+                                   sort_field=card["number"], tags=card['tags'],
+                                   guid=g)
                     notes.append(my_note)
                 else:
-                    my_note = Note(model, fields=fields, sort_field=card["number"], tags=card['tags'])
+                    my_note = Note(model, fields=fields,
+                                   sort_field=card["number"], tags=card['tags'])
                     notes.append(my_note)
                 media_files = media_files + card["media"]
             decks.append(

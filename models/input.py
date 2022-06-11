@@ -1,3 +1,6 @@
+"""
+Input note model
+"""
 import json
 
 from genanki import Model
@@ -9,12 +12,12 @@ DEFAULT_INPUT = json.loads(
 )
 
 
-def input_model(id, name, css, qfmt, afmt):
+def input_model(model_id, name, css, qfmt, afmt):
     if qfmt is None:
         qfmt = DEFAULT_INPUT.get("front")
     if afmt is None:
         afmt = DEFAULT_INPUT.get("back")
-    return Model(id, name,
+    return Model(model_id, name,
                  fields=DEFAULT_INPUT.get("fields"),
                  templates=[
                      {
