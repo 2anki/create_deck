@@ -11,6 +11,7 @@ import json
 import sys
 
 import sentry_sdk
+
 sentry_sdk.init(
     dsn="https://72be99d0475a4bfa9b0f24631571c96a@o1284472.ingest.sentry.io/6495216",
     traces_sample_rate=1.0
@@ -36,6 +37,7 @@ def model_id(name):
     # https://stackoverflow.com/questions/16008670/how-to-hash-a-string-into-8-digits
     return abs(int(hashlib.sha1(name.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
 
+
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         raise IOError('missing payload arguments(data file, deck style, template dir)')
@@ -54,12 +56,12 @@ if __name__ == "__main__":
         styling = data[0].get('style', "") or ""
 
         # Retreive template names for user or get the default ones
-        cloze_model_name = mt.get('clozeModelName', "n2a-cloze") or  "n2a-cloze"
+        cloze_model_name = mt.get('clozeModelName', "n2a-cloze") or "n2a-cloze"
         basic_model_name = mt.get('basicModelName', "n2a-basic") or "n2a-basic"
         input_model_name = mt.get('inputModelName', "n2a-input") or "n2a-input"
 
         # Set the model ids based on the template name
-        input_model_id = mt.get('inputModelId', model_id(input_model_name))        
+        input_model_id = mt.get('inputModelId', model_id(input_model_name))
         cloze_model_id = mt.get('clozeModelId', model_id(cloze_model_name))
         basic_model_id = mt.get('basicModelId', model_id(basic_model_name))
         template = mt.get('template', 'specialstyle')
@@ -81,7 +83,8 @@ if __name__ == "__main__":
             fmtQ = _read_template(template_dir, "abhiyan_basic_front.html", "", "")
             fmtA = _read_template(template_dir, "abhiyan_basic_back.html", "", "")
             fmtInputQ = _read_template(template_dir, "abhiyan_input_front.html", "", "")
-            fmtInputA =_read_template(template_dir, "abhiyan_basic_back.html", "", "") # Note: reusing the basic back, essentially the same.
+            fmtInputA = _read_template(template_dir, "abhiyan_basic_back.html", "",
+                                       "")  # Note: reusing the basic back, essentially the same.
         elif template == 'alex_deluxe':
             styling = _read_template(template_dir, 'alex_deluxe.css', "", "")
             CLOZE_STYLE = _read_template(template_dir, "alex_deluxe_cloze_style.css", "", "")
@@ -90,7 +93,7 @@ if __name__ == "__main__":
             fmtQ = _read_template(template_dir, "alex_deluxe_basic_front.html", "", "")
             fmtA = _read_template(template_dir, "alex_deluxe_basic_back.html", "", "")
             fmtInputQ = _read_template(template_dir, "alex_deluxe_input_front.html", "", "")
-            fmtInputA =_read_template(template_dir, "alex_deluxe_input_back.html", "", "")
+            fmtInputA = _read_template(template_dir, "alex_deluxe_input_back.html", "", "")
         # else notionstyle
         CLOZE_STYLE = CLOZE_STYLE + "\n" + styling
 
@@ -110,7 +113,7 @@ if __name__ == "__main__":
             CLOZE_STYLE = n2aCloze["styling"]
             CLOZE_FRONT = n2aCloze["front"]
             CLOZE_BACK = n2aCloze["back"]
-        
+
         n2aInput = mt.get("n2aInput")
         INPUT_FRONT = fmtInputQ
         INPUT_BACK = fmtInputA
@@ -125,9 +128,9 @@ if __name__ == "__main__":
             notes = []
             for card in cards:
                 fields = [card["name"], card["back"], ",".join(card["media"])]
-                model = basic_model(basic_model_id, basic_model_name, BASIC_STYLE, BASIC_FRONT, BASIC_BACK) 
-                if card.get('cloze', False) and "{{c" in card["name"] :
-                    model = cloze_model(cloze_model_id, cloze_model_name, CLOZE_STYLE , CLOZE_FRONT, CLOZE_BACK)
+                model = basic_model(basic_model_id, basic_model_name, BASIC_STYLE, BASIC_FRONT, BASIC_BACK)
+                if card.get('cloze', False) and "{{c" in card["name"]:
+                    model = cloze_model(cloze_model_id, cloze_model_name, CLOZE_STYLE, CLOZE_FRONT, CLOZE_BACK)
                 elif card.get('enableInput', False) and card.get('answer', False):
                     model = input_model(input_model_id, input_model_name, INPUT_STYLE, INPUT_FRONT, INPUT_BACK)
                     fields = [
@@ -147,7 +150,7 @@ if __name__ == "__main__":
                 else:
                     my_note = Note(model, fields=fields, sort_field=card["number"], tags=card['tags'])
                     notes.append(my_note)
-                media_files = media_files + card["media"]            
+                media_files = media_files + card["media"]
             decks.append(
                 {
                     "notes": notes,
