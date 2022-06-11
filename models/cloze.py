@@ -1,5 +1,4 @@
 import json
-import os
 
 from genanki import Model
 
