@@ -32,6 +32,10 @@ def _path_start():
         return "/"
 
 
+def get_template_path():
+    return os.path.dirname(__file__) + "/../server/src/templates/"
+
+
 def _read_template(template_dir, path, fmt, value):
     file_path = path if path.startswith(_path_start()) else template_dir + path
     with open(file_path, "r", encoding="utf-8") as file:

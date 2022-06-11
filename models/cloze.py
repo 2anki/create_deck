@@ -3,9 +3,9 @@ import os
 
 from genanki import Model
 
-from fs_util import _read_template
+from fs_util import _read_template, get_template_path
 
-DEFAULT_CLOZE = json.loads(_read_template(os.path.dirname(__file__) + "/../../templates/", "n2a-cloze.json", "", ""))
+DEFAULT_CLOZE = json.loads(_read_template(get_template_path(), "n2a-cloze.json", "", ""))
 
 
 def cloze_model(id, name, css, qfmt, afmt):

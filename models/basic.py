@@ -3,9 +3,9 @@ import os
 
 from genanki import Model
 
-from fs_util import _read_template
+from fs_util import _read_template, get_template_path
 
-DEFAULT_BASIC = json.loads(_read_template(os.path.dirname(__file__) + "/../../templates/", "n2a-basic.json", "", ""))
+DEFAULT_BASIC = json.loads(_read_template(get_template_path(), "n2a-basic.json", "", ""))
 
 
 def basic_model(id, name, css, qfmt, afmt):
