@@ -6,7 +6,6 @@ by the Notion to Anki parser.
 [0]: https://github.com/kerrickstaley/genanki
 """
 
-import hashlib
 import json
 import sys
 
@@ -15,6 +14,7 @@ from genanki import Note
 from genanki.util import guid_for
 
 from helpers.get_model import get_model
+from helpers.get_model_id import get_model_id
 from helpers.read_template import _read_template
 from helpers.write_apkg import _wr_apkg
 
@@ -22,23 +22,6 @@ sentry_sdk.init(
     dsn="https://72be99d0475a4bfa9b0f24631571c96a@o1284472.ingest.sentry.io/6495216",
     traces_sample_rate=1.0
 )
-
-
-def model_id(name):
-    """
-    Preserve the old ids for backwards compatibility.
-    :param name:
-    :return:
-    """
-    if name == "n2a-input":
-        return 6394002335189144856
-    if name == "n2a-cloze":
-        return 998877661
-    if name == "n2a-basic":
-        return 2020
-    # https://stackoverflow.com/questions/16008670/how-to-hash-a-string-into-8-digits
-    return abs(
-        int(hashlib.sha1(name.encode("utf-8")).hexdigest(), 16) % (10 ** 8))
 
 
 if __name__ == "__main__":
@@ -65,9 +48,9 @@ if __name__ == "__main__":
         input_model_name = mt.get('inputModelName', "n2a-input") or "n2a-input"
 
         # Set the model ids based on the template name
-        input_model_id = mt.get('inputModelId', model_id(input_model_name))
-        cloze_model_id = mt.get('clozeModelId', model_id(cloze_model_name))
-        basic_model_id = mt.get('basicModelId', model_id(basic_model_name))
+        input_model_id = mt.get('inputModelId', get_model_id(input_model_name))
+        cloze_model_id = mt.get('clozeModelId', get_model_id(cloze_model_name))
+        basic_model_id = mt.get('basicModelId', get_model_id(basic_model_name))
         template = mt.get('template', 'specialstyle')
 
         FMT_CLOZE_QUESTION = FMT_CLOZE_ANSWER = None
