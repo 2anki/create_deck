@@ -126,13 +126,13 @@ if __name__ == "__main__":
                                               "alex_deluxe_input_back.html", "",
                                               "")
         # else notionstyle
+        USE_CUSTOM_TEMPLATE = template == 'custom'
         CLOZE_STYLE = CLOZE_STYLE + "\n" + STYLING
-
         BASIC_STYLE = STYLING
         BASIC_FRONT = FMT_QUESTION
         BASIC_BACK = FMT_ANSWER
         n2aBasic = mt.get("n2aBasic")
-        if n2aBasic:
+        if n2aBasic and USE_CUSTOM_TEMPLATE:
             BASIC_STYLE = n2aBasic["styling"]
             BASIC_FRONT = n2aBasic["front"]
             BASIC_BACK = n2aBasic["back"]
@@ -140,7 +140,7 @@ if __name__ == "__main__":
         CLOZE_FRONT = FMT_CLOZE_QUESTION
         CLOZE_BACK = FMT_CLOZE_ANSWER
         n2aCloze = mt.get("n2aCloze")
-        if n2aCloze:
+        if n2aCloze and USE_CUSTOM_TEMPLATE:
             CLOZE_STYLE = n2aCloze["styling"]
             CLOZE_FRONT = n2aCloze["front"]
             CLOZE_BACK = n2aCloze["back"]
@@ -149,7 +149,7 @@ if __name__ == "__main__":
         INPUT_FRONT = FMT_INPUT_QUESTION
         INPUT_BACK = FMT_INPUT_ANSWER
         INPUT_STYLE = STYLING
-        if n2aInput:
+        if n2aInput and USE_CUSTOM_TEMPLATE:
             INPUT_STYLE = n2aInput["styling"]
             INPUT_FRONT = n2aInput["front"]
             INPUT_BACK = n2aInput["back"]
