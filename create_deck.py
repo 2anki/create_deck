@@ -1,5 +1,5 @@
 """
-This file is a modifcation on one of the test files of genanki[0].
+This file is a modification on one of the test files of genanki[0].
 It's used to create the APKG file from the JSON structure produced
 by the Notion to Anki parser.
 
@@ -13,8 +13,8 @@ import sentry_sdk
 from genanki import Note
 from genanki.util import guid_for
 
+from helpers.anki_template_file import AnkiTemplateFile
 from helpers.get_model import get_model
-from helpers.get_model_id import get_model_id
 from helpers.read_template import _read_template
 from helpers.write_apkg import _wr_apkg
 
@@ -24,165 +24,111 @@ sentry_sdk.init(
 )
 
 
+def create_deck(data_file, template_dir):
+    """
+    Create Anki deck in APKG format.
+    """
+    if data_file and template_dir:
+
+        with open(data_file, "r", encoding="utf-8") as json_file:
+            data = json.load(json_file)
+            media_files = []
+            decks = []
+
+            # Model / Template stuff
+            deck_settings = data[0]["settings"]
+            template_selection = deck_settings.get('template', 'specialstyle')
+
+            # Retrieve template names for user or get the default ones
+            cloze_template = AnkiTemplateFile(deck_settings, "cloze",
+                                              template_dir, template_selection)
+            input_template = AnkiTemplateFile(deck_settings, "input",
+                                              template_dir, template_selection)
+            basic_template = AnkiTemplateFile(deck_settings, "basic",
+                                              template_dir, template_selection)
+
+            cloze_template.style += "\n" + _read_template(template_dir,
+                                                          "cloze_style.css", "",
+                                                          "")
+
+            # Respect user's choice of template
+            if template_selection == 'nostyle':
+                basic_template.clear_style()
+                cloze_template.clear_style()
+                input_template.clear_style()
+            elif template_selection == 'abhiyan':
+                cloze_template.load_user_file(template_dir, 'abhiyan')
+                basic_template.load_user_file(template_dir, 'abhiyan')
+                input_template.load_user_file(template_dir, 'abhiyan')
+            elif template_selection == 'alex_deluxe':
+                cloze_template.load_user_file(template_dir, 'alex_deluxe')
+                basic_template.load_user_file(template_dir, 'alex_deluxe')
+                input_template.load_user_file(template_dir, 'alex_deluxe')
+            elif template_selection == 'custom':
+                basic_template.override_values(deck_settings.get("n2aBasic"))
+                cloze_template.override_values(deck_settings.get("n2aCloze"))
+                input_template.override_values(deck_settings.get("n2aInput"))
+
+            for deck in data:
+                cards = deck.get("cards", [])
+                notes = []
+                for card in cards:
+                    fields = [card["name"], card["back"],
+                              ",".join(card["media"])]
+                    model = get_model(
+                        ("basic", basic_template.id, basic_template.name,
+                         basic_template.style, basic_template.front,
+                         basic_template.back))
+                    if card.get('cloze', False) and "{{c" in card["name"]:
+                        model = get_model(
+                            ("cloze", cloze_template.id, cloze_template.name,
+                             cloze_template.style, cloze_template.front,
+                             cloze_template.back))
+                    elif card.get('enableInput', False) and card.get('answer',
+                                                                     False):
+                        model = get_model(
+                            ("input", input_template.id, input_template.name,
+                             input_template.style, input_template.front,
+                             input_template.back))
+                        fields = [
+                            card["name"].replace("{{type:Input}}", ""),
+                            card["back"],
+                            card["answer"],
+                            ",".join(card["media"]),
+                        ]
+                    # Cards marked with -1 number means they are breaking
+                    # compatibility, treat them differently by using their
+                    # respective Notion id.
+                    if card["number"] == -1 and "notionId" in card:
+                        card["number"] = card["notionId"]
+
+                    if deck_settings.get("useNotionId") and "notionId" in card:
+                        guid = guid_for(card["notionId"])
+                        my_note = Note(model, fields=fields,
+                                       sort_field=card["number"],
+                                       tags=card['tags'],
+                                       guid=guid)
+                        notes.append(my_note)
+                    else:
+                        my_note = Note(model, fields=fields,
+                                       sort_field=card["number"],
+                                       tags=card['tags'])
+                        notes.append(my_note)
+                    media_files = media_files + card["media"]
+                decks.append(
+                    {
+                        "notes": notes,
+                        "id": deck["id"],
+                        "desc": "",
+                        "name": deck["name"],
+                    }
+                )
+
+        _wr_apkg(decks, media_files)
+        return
+    raise IOError(
+        'missing payload arguments(data file, deck style, template dir)')
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        raise IOError(
-            'missing payload arguments(data file, deck style, template dir)')
-    data_file = sys.argv[1]
-    template_dir = sys.argv[2]
-
-    CLOZE_STYLE = _read_template(template_dir, "cloze_style.css", "", "")
-
-    with open(data_file, "r", encoding="utf-8") as json_file:
-        data = json.load(json_file)
-        media_files = []
-        decks = []
-
-        # Model / Template stuff
-        mt = data[0]["settings"]
-        STYLING = data[0].get('style', "") or ""
-
-        # Retreive template names for user or get the default ones
-        cloze_model_name = mt.get('clozeModelName', "n2a-cloze") or "n2a-cloze"
-        basic_model_name = mt.get('basicModelName', "n2a-basic") or "n2a-basic"
-        input_model_name = mt.get('inputModelName', "n2a-input") or "n2a-input"
-
-        # Set the model ids based on the template name
-        input_model_id = mt.get('inputModelId', get_model_id(input_model_name))
-        cloze_model_id = mt.get('clozeModelId', get_model_id(cloze_model_name))
-        basic_model_id = mt.get('basicModelId', get_model_id(basic_model_name))
-        template = mt.get('template', 'specialstyle')
-
-        FMT_CLOZE_QUESTION = FMT_CLOZE_ANSWER = None
-        FMT_INPUT_QUESTION = FMT_INPUT_ANSWER = None
-        FMT_QUESTION = FMT_ANSWER = None
-
-        # Respect user's choice of template
-        if template == 'specialstyle':
-            STYLING += _read_template(template_dir, "custom.css", "", "")
-        elif template == 'nostyle':
-            STYLING = ""
-        elif template == 'abhiyan':
-            STYLING = _read_template(template_dir, 'abhiyan.css', "", "")
-            CLOZE_STYLE = _read_template(template_dir,
-                                         "abhiyan_cloze_style.css", "", "")
-            FMT_CLOZE_QUESTION = _read_template(template_dir,
-                                                "abhiyan_cloze_front.html",
-                                                "", "")
-            FMT_CLOZE_ANSWER = _read_template(template_dir,
-                                              "abhiyan_cloze_back.html",
-                                              "", "")
-            FMT_QUESTION = _read_template(template_dir,
-                                          "abhiyan_basic_front.html", "",
-                                          "")
-            FMT_ANSWER = _read_template(template_dir, "abhiyan_basic_back.html",
-                                        "",
-                                        "")
-            FMT_INPUT_QUESTION = _read_template(template_dir,
-                                                "abhiyan_input_front.html",
-                                                "", "")
-            # Note: reusing the basic back, essentially the same.
-            FMT_INPUT_ANSWER = _read_template(template_dir,
-                                              "abhiyan_basic_back.html",
-                                              "",
-                                              "")
-        elif template == 'alex_deluxe':
-            STYLING = _read_template(template_dir, 'alex_deluxe.css', "", "")
-            CLOZE_STYLE = _read_template(template_dir,
-                                         "alex_deluxe_cloze_style.css", "", "")
-            FMT_CLOZE_QUESTION = _read_template(template_dir,
-                                                "alex_deluxe_cloze_front.html",
-                                                "", "")
-            FMT_CLOZE_ANSWER = _read_template(template_dir,
-                                              "alex_deluxe_cloze_back.html", "",
-                                              "")
-            FMT_QUESTION = _read_template(template_dir,
-                                          "alex_deluxe_basic_front.html",
-                                          "", "")
-            FMT_ANSWER = _read_template(template_dir,
-                                        "alex_deluxe_basic_back.html",
-                                        "", "")
-            FMT_INPUT_QUESTION = _read_template(template_dir,
-                                                "alex_deluxe_input_front.html",
-                                                "", "")
-            FMT_INPUT_ANSWER = _read_template(template_dir,
-                                              "alex_deluxe_input_back.html", "",
-                                              "")
-        # else notionstyle
-        USE_CUSTOM_TEMPLATE = template == 'custom'
-        CLOZE_STYLE = CLOZE_STYLE + "\n" + STYLING
-        BASIC_STYLE = STYLING
-        BASIC_FRONT = FMT_QUESTION
-        BASIC_BACK = FMT_ANSWER
-        n2aBasic = mt.get("n2aBasic")
-        if n2aBasic and USE_CUSTOM_TEMPLATE:
-            BASIC_STYLE = n2aBasic["styling"]
-            BASIC_FRONT = n2aBasic["front"]
-            BASIC_BACK = n2aBasic["back"]
-
-        CLOZE_FRONT = FMT_CLOZE_QUESTION
-        CLOZE_BACK = FMT_CLOZE_ANSWER
-        n2aCloze = mt.get("n2aCloze")
-        if n2aCloze and USE_CUSTOM_TEMPLATE:
-            CLOZE_STYLE = n2aCloze["styling"]
-            CLOZE_FRONT = n2aCloze["front"]
-            CLOZE_BACK = n2aCloze["back"]
-
-        n2aInput = mt.get("n2aInput")
-        INPUT_FRONT = FMT_INPUT_QUESTION
-        INPUT_BACK = FMT_INPUT_ANSWER
-        INPUT_STYLE = STYLING
-        if n2aInput and USE_CUSTOM_TEMPLATE:
-            INPUT_STYLE = n2aInput["styling"]
-            INPUT_FRONT = n2aInput["front"]
-            INPUT_BACK = n2aInput["back"]
-
-        for deck in data:
-            cards = deck.get("cards", [])
-            notes = []
-            for card in cards:
-                fields = [card["name"], card["back"], ",".join(card["media"])]
-                model = get_model(("basic", basic_model_id, basic_model_name,
-                                   BASIC_STYLE, BASIC_FRONT, BASIC_BACK))
-                if card.get('cloze', False) and "{{c" in card["name"]:
-                    model = get_model(
-                        ("cloze", cloze_model_id, cloze_model_name,
-                         CLOZE_STYLE, CLOZE_FRONT, CLOZE_BACK))
-                elif card.get('enableInput', False) and card.get('answer',
-                                                                 False):
-                    model = get_model(
-                        ("input", input_model_id, input_model_name,
-                         INPUT_STYLE, INPUT_FRONT, INPUT_BACK))
-                    fields = [
-                        card["name"].replace("{{type:Input}}", ""),
-                        card["back"],
-                        card["answer"],
-                        ",".join(card["media"]),
-                    ]
-                # Cards marked with -1 number means they are breaking
-                # compatability, treat them differently by using their
-                # respective Notion Id.
-                if card["number"] == -1 and "notionId" in card:
-                    card["number"] = card["notionId"]
-
-                if mt.get("useNotionId") and "notionId" in card:
-                    GUID = guid_for(card["notionId"])
-                    my_note = Note(model, fields=fields,
-                                   sort_field=card["number"], tags=card['tags'],
-                                   guid=GUID)
-                    notes.append(my_note)
-                else:
-                    my_note = Note(model, fields=fields,
-                                   sort_field=card["number"], tags=card['tags'])
-                    notes.append(my_note)
-                media_files = media_files + card["media"]
-            decks.append(
-                {
-                    "notes": notes,
-                    "id": deck["id"],
-                    "desc": "",
-                    "name": deck["name"],
-                }
-            )
-
-    _wr_apkg(decks, media_files)
+    create_deck(sys.argv[1], sys.argv[2])

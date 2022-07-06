@@ -3,3 +3,5 @@
 # It's using notion2anki as a submodule.
 genanki==0.13.0
 sentry-sdk==1.6.0
+
+pytest~=7.1.2
