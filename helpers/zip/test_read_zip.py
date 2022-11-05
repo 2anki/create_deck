@@ -28,6 +28,12 @@ class MyTestCase(unittest.TestCase):
         actual = get_text_in_zip_file(EXAMPLE_ZIP_PATH, "input.txt")
         self.assertEqual(expected, actual)
 
+    def test_get_file_content_in_zip_file(self):
+        self.fail("uint8array to be implemented")
+
+    def test_create_zip_file_from_decks(self):
+        self.fail("multi deck support to be implemented")
+
 
 if __name__ == '__main__':
     unittest.main()
