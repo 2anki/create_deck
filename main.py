@@ -1,14 +1,15 @@
-from fastapi import FastAPI
+import fastapi
 
 from __version__ import version
 
-description = """
+description: str = """
 The create_deck API helps you create Anki flashcards fast. 🌟
 """
 
-tos = "https://alemayhu.notion.site/Terms-of-services-931865161517453b99fb6495e400061d"
+tos: str = "https://alemayhu.notion.site/Terms-of-services" \
+      "-931865161517453b99fb6495e400061d "
 
-app = FastAPI(
+app = fastapi.FastAPI(
     title="create_deck API",
     description=description,
     version=version,
