@@ -8,7 +8,7 @@ import sys
 from genanki import Deck, Package
 
 
-def _wr_apkg(payload, media_files):
+def _write_new_apkg(payload, media_files):
     first_id = ""
     decks = []
 

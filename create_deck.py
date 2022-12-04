@@ -13,10 +13,10 @@ import sentry_sdk
 from genanki import Note
 from genanki.util import guid_for
 
-from helpers.get_model import get_model
-from helpers.get_model_id import get_model_id
-from helpers.read_template import _read_template
-from helpers.write_apkg import _wr_apkg
+from helpers.get_model import get_model # pylint: disable=import-error
+from helpers.get_model_id import get_model_id # pylint: disable=import-error
+from helpers.read_template import read_template # pylint: disable=import-error
+from helpers.write_apkg import _write_new_apkg # pylint: disable=import-error
 
 sentry_sdk.init(
     dsn="https://72be99d0475a4bfa9b0f24631571c96a@o1284472.ingest.sentry.io/6495216",
@@ -28,12 +28,12 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         raise IOError(
             'missing payload arguments(data file, deck style, template dir)')
-    data_file = sys.argv[1]
-    template_dir = sys.argv[2]
+    DATA_FILE = sys.argv[1]
+    TEMPLATE_DIR = sys.argv[2]
 
-    CLOZE_STYLE = _read_template(template_dir, "cloze_style.css", "", "")
+    CLOZE_STYLE = read_template(TEMPLATE_DIR, "cloze_style.css", "", "")
 
-    with open(data_file, "r", encoding="utf-8") as json_file:
+    with open(DATA_FILE, "r", encoding="utf-8") as json_file:
         data = json.load(json_file)
         media_files = []
         decks = []
@@ -59,53 +59,53 @@ if __name__ == "__main__":
 
         # Respect user's choice of template
         if template == 'specialstyle':
-            STYLING += _read_template(template_dir, "custom.css", "", "")
+            STYLING += read_template(TEMPLATE_DIR, "custom.css", "", "")
         elif template == 'nostyle':
             STYLING = ""
         elif template == 'abhiyan':
-            STYLING = _read_template(template_dir, 'abhiyan.css', "", "")
-            CLOZE_STYLE = _read_template(template_dir,
+            STYLING = read_template(TEMPLATE_DIR, 'abhiyan.css', "", "")
+            CLOZE_STYLE = read_template(TEMPLATE_DIR,
                                          "abhiyan_cloze_style.css", "", "")
-            FMT_CLOZE_QUESTION = _read_template(template_dir,
+            FMT_CLOZE_QUESTION = read_template(TEMPLATE_DIR,
                                                 "abhiyan_cloze_front.html",
                                                 "", "")
-            FMT_CLOZE_ANSWER = _read_template(template_dir,
+            FMT_CLOZE_ANSWER = read_template(TEMPLATE_DIR,
                                               "abhiyan_cloze_back.html",
                                               "", "")
-            FMT_QUESTION = _read_template(template_dir,
+            FMT_QUESTION = read_template(TEMPLATE_DIR,
                                           "abhiyan_basic_front.html", "",
                                           "")
-            FMT_ANSWER = _read_template(template_dir, "abhiyan_basic_back.html",
+            FMT_ANSWER = read_template(TEMPLATE_DIR, "abhiyan_basic_back.html",
                                         "",
                                         "")
-            FMT_INPUT_QUESTION = _read_template(template_dir,
+            FMT_INPUT_QUESTION = read_template(TEMPLATE_DIR,
                                                 "abhiyan_input_front.html",
                                                 "", "")
             # Note: reusing the basic back, essentially the same.
-            FMT_INPUT_ANSWER = _read_template(template_dir,
+            FMT_INPUT_ANSWER = read_template(TEMPLATE_DIR,
                                               "abhiyan_basic_back.html",
                                               "",
                                               "")
         elif template == 'alex_deluxe':
-            STYLING = _read_template(template_dir, 'alex_deluxe.css', "", "")
-            CLOZE_STYLE = _read_template(template_dir,
+            STYLING = read_template(TEMPLATE_DIR, 'alex_deluxe.css', "", "")
+            CLOZE_STYLE = read_template(TEMPLATE_DIR,
                                          "alex_deluxe_cloze_style.css", "", "")
-            FMT_CLOZE_QUESTION = _read_template(template_dir,
+            FMT_CLOZE_QUESTION = read_template(TEMPLATE_DIR,
                                                 "alex_deluxe_cloze_front.html",
                                                 "", "")
-            FMT_CLOZE_ANSWER = _read_template(template_dir,
+            FMT_CLOZE_ANSWER = read_template(TEMPLATE_DIR,
                                               "alex_deluxe_cloze_back.html", "",
                                               "")
-            FMT_QUESTION = _read_template(template_dir,
+            FMT_QUESTION = read_template(TEMPLATE_DIR,
                                           "alex_deluxe_basic_front.html",
                                           "", "")
-            FMT_ANSWER = _read_template(template_dir,
+            FMT_ANSWER = read_template(TEMPLATE_DIR,
                                         "alex_deluxe_basic_back.html",
                                         "", "")
-            FMT_INPUT_QUESTION = _read_template(template_dir,
+            FMT_INPUT_QUESTION = read_template(TEMPLATE_DIR,
                                                 "alex_deluxe_input_front.html",
                                                 "", "")
-            FMT_INPUT_ANSWER = _read_template(template_dir,
+            FMT_INPUT_ANSWER = read_template(TEMPLATE_DIR,
                                               "alex_deluxe_input_back.html", "",
                                               "")
         # else notionstyle
@@ -185,4 +185,4 @@ if __name__ == "__main__":
                 }
             )
 
-    _wr_apkg(decks, media_files)
+    _write_new_apkg(decks, media_files)
