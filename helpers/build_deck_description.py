@@ -1,7 +1,7 @@
 """
 Helper function to add image to the deck description.
 """
-from helpers.read_template import _read_template
+from .read_template import _read_template
 
 
 def _build_deck_description(template_dir, image):

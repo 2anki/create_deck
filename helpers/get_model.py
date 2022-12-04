@@ -3,7 +3,7 @@ Retrieve the correct genanki model
 """
 from genanki import Model
 
-from helpers.get_template import get_template
+from .get_template import get_template
 
 MODEL_INFO = {
     "cloze": {

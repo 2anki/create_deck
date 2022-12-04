@@ -1,7 +1,7 @@
 """
 Load template file
 """
-from helpers.get_path_start import _path_start
+from .get_path_start import _path_start
 
 
 def _read_template(template_dir, path, fmt, value):
