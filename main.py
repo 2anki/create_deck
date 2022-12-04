@@ -29,3 +29,7 @@ app = fastapi.FastAPI(
 @app.get("/")
 def read_version():
     return version.encode("utf-8")
+
+@app.get("/checks")
+def read_checks():
+    return "create_deck"
