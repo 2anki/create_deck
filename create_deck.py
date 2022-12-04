@@ -28,12 +28,12 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         raise IOError(
             'missing payload arguments(data file, deck style, template dir)')
-    data_file = sys.argv[1]
-    template_dir = sys.argv[2]
+    DATA_FILE = sys.argv[1]
+    TEMPLATE_DIR = sys.argv[2]
 
-    CLOZE_STYLE = read_template(template_dir, "cloze_style.css", "", "")
+    CLOZE_STYLE = read_template(TEMPLATE_DIR, "cloze_style.css", "", "")
 
-    with open(data_file, "r", encoding="utf-8") as json_file:
+    with open(DATA_FILE, "r", encoding="utf-8") as json_file:
         data = json.load(json_file)
         media_files = []
         decks = []
@@ -59,53 +59,53 @@ if __name__ == "__main__":
 
         # Respect user's choice of template
         if template == 'specialstyle':
-            STYLING += read_template(template_dir, "custom.css", "", "")
+            STYLING += read_template(TEMPLATE_DIR, "custom.css", "", "")
         elif template == 'nostyle':
             STYLING = ""
         elif template == 'abhiyan':
-            STYLING = read_template(template_dir, 'abhiyan.css', "", "")
-            CLOZE_STYLE = read_template(template_dir,
+            STYLING = read_template(TEMPLATE_DIR, 'abhiyan.css', "", "")
+            CLOZE_STYLE = read_template(TEMPLATE_DIR,
                                          "abhiyan_cloze_style.css", "", "")
-            FMT_CLOZE_QUESTION = read_template(template_dir,
+            FMT_CLOZE_QUESTION = read_template(TEMPLATE_DIR,
                                                 "abhiyan_cloze_front.html",
                                                 "", "")
-            FMT_CLOZE_ANSWER = read_template(template_dir,
+            FMT_CLOZE_ANSWER = read_template(TEMPLATE_DIR,
                                               "abhiyan_cloze_back.html",
                                               "", "")
-            FMT_QUESTION = read_template(template_dir,
+            FMT_QUESTION = read_template(TEMPLATE_DIR,
                                           "abhiyan_basic_front.html", "",
                                           "")
-            FMT_ANSWER = read_template(template_dir, "abhiyan_basic_back.html",
+            FMT_ANSWER = read_template(TEMPLATE_DIR, "abhiyan_basic_back.html",
                                         "",
                                         "")
-            FMT_INPUT_QUESTION = read_template(template_dir,
+            FMT_INPUT_QUESTION = read_template(TEMPLATE_DIR,
                                                 "abhiyan_input_front.html",
                                                 "", "")
             # Note: reusing the basic back, essentially the same.
-            FMT_INPUT_ANSWER = read_template(template_dir,
+            FMT_INPUT_ANSWER = read_template(TEMPLATE_DIR,
                                               "abhiyan_basic_back.html",
                                               "",
                                               "")
         elif template == 'alex_deluxe':
-            STYLING = read_template(template_dir, 'alex_deluxe.css', "", "")
-            CLOZE_STYLE = read_template(template_dir,
+            STYLING = read_template(TEMPLATE_DIR, 'alex_deluxe.css', "", "")
+            CLOZE_STYLE = read_template(TEMPLATE_DIR,
                                          "alex_deluxe_cloze_style.css", "", "")
-            FMT_CLOZE_QUESTION = read_template(template_dir,
+            FMT_CLOZE_QUESTION = read_template(TEMPLATE_DIR,
                                                 "alex_deluxe_cloze_front.html",
                                                 "", "")
-            FMT_CLOZE_ANSWER = read_template(template_dir,
+            FMT_CLOZE_ANSWER = read_template(TEMPLATE_DIR,
                                               "alex_deluxe_cloze_back.html", "",
                                               "")
-            FMT_QUESTION = read_template(template_dir,
+            FMT_QUESTION = read_template(TEMPLATE_DIR,
                                           "alex_deluxe_basic_front.html",
                                           "", "")
-            FMT_ANSWER = read_template(template_dir,
+            FMT_ANSWER = read_template(TEMPLATE_DIR,
                                         "alex_deluxe_basic_back.html",
                                         "", "")
-            FMT_INPUT_QUESTION = read_template(template_dir,
+            FMT_INPUT_QUESTION = read_template(TEMPLATE_DIR,
                                                 "alex_deluxe_input_front.html",
                                                 "", "")
-            FMT_INPUT_ANSWER = read_template(template_dir,
+            FMT_INPUT_ANSWER = read_template(TEMPLATE_DIR,
                                               "alex_deluxe_input_back.html", "",
                                               "")
         # else notionstyle
