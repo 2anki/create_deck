@@ -2,7 +2,7 @@
 Test for get_model_id
 """
 
-from helpers.get_model_id import get_model_id
+from .get_model_id import get_model_id
 
 
 def test_get_model_id():
