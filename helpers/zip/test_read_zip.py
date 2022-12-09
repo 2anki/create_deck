@@ -1,5 +1,5 @@
-import unittest
 import os
+import unittest
 import zipfile
 
 from helpers.zip.zip import get_files_in_zip_file, get_text_in_zip_file
