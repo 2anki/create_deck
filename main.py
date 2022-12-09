@@ -1,5 +1,5 @@
 """
-The new 2anki backend API.
+create_deck API for 2anki.net
 """
 import fastapi
 

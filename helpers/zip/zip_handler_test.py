@@ -1,13 +1,19 @@
+"""
+Test the loading of zip file
+"""
 import os
 import unittest
 import zipfile
 
-from helpers.zip.zip import get_files_in_zip_file, get_text_in_zip_file
+from .zip import get_files_in_zip_file, get_text_in_zip_file
 
 EXAMPLE_ZIP_PATH = "create_deck-example.zip"
 
 
-class MyTestCase(unittest.TestCase):
+class ZipHandlerCase(unittest.TestCase):
+    """
+    Test case class for zip handling
+    """
     @classmethod
     def setUpClass(cls):
         filepath = os.path.join(os.getcwd(), EXAMPLE_ZIP_PATH)
@@ -19,11 +25,19 @@ class MyTestCase(unittest.TestCase):
         os.remove(EXAMPLE_ZIP_PATH)
 
     def test_get_files(self):
+        """
+        Test that we can list the files in the ZIP file
+        :return:
+        """
         expect_files = ['input.txt']
         actual_files = get_files_in_zip_file(EXAMPLE_ZIP_PATH)
         self.assertEqual(expect_files, actual_files)
 
     def test_get_text_content(self):
+        """
+        Test that we can read the contents of text files
+        :return:
+        """
         expected = "tull"
         actual = get_text_in_zip_file(EXAMPLE_ZIP_PATH, "input.txt")
         self.assertEqual(expected, actual)
