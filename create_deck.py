@@ -13,17 +13,16 @@ import sentry_sdk
 from genanki import Note
 from genanki.util import guid_for
 
-from helpers.get_model import get_model # pylint: disable=import-error
-from helpers.get_model_id import get_model_id # pylint: disable=import-error
-from helpers.read_template import read_template # pylint: disable=import-error
+from helpers.get_model import get_model  # pylint: disable=import-error
+from helpers.get_model_id import get_model_id  # pylint: disable=import-error
+from helpers.read_template import read_template  # pylint: disable=import-error
 from helpers.sanitize_tags import sanitize_tags
-from helpers.write_apkg import _write_new_apkg # pylint: disable=import-error
+from helpers.write_apkg import _write_new_apkg  # pylint: disable=import-error
 
 sentry_sdk.init(
     dsn="https://72be99d0475a4bfa9b0f24631571c96a@o1284472.ingest.sentry.io/6495216",
     traces_sample_rate=1.0
 )
-
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -66,49 +65,49 @@ if __name__ == "__main__":
         elif template == 'abhiyan':
             STYLING = read_template(TEMPLATE_DIR, 'abhiyan.css', "", "")
             CLOZE_STYLE = read_template(TEMPLATE_DIR,
-                                         "abhiyan_cloze_style.css", "", "")
+                                        "abhiyan_cloze_style.css", "", "")
             FMT_CLOZE_QUESTION = read_template(TEMPLATE_DIR,
-                                                "abhiyan_cloze_front.html",
-                                                "", "")
+                                               "abhiyan_cloze_front.html",
+                                               "", "")
             FMT_CLOZE_ANSWER = read_template(TEMPLATE_DIR,
-                                              "abhiyan_cloze_back.html",
-                                              "", "")
+                                             "abhiyan_cloze_back.html",
+                                             "", "")
             FMT_QUESTION = read_template(TEMPLATE_DIR,
-                                          "abhiyan_basic_front.html", "",
-                                          "")
+                                         "abhiyan_basic_front.html", "",
+                                         "")
             FMT_ANSWER = read_template(TEMPLATE_DIR, "abhiyan_basic_back.html",
-                                        "",
-                                        "")
+                                       "",
+                                       "")
             FMT_INPUT_QUESTION = read_template(TEMPLATE_DIR,
-                                                "abhiyan_input_front.html",
-                                                "", "")
+                                               "abhiyan_input_front.html",
+                                               "", "")
             # Note: reusing the basic back, essentially the same.
             FMT_INPUT_ANSWER = read_template(TEMPLATE_DIR,
-                                              "abhiyan_basic_back.html",
-                                              "",
-                                              "")
+                                             "abhiyan_basic_back.html",
+                                             "",
+                                             "")
         elif template == 'alex_deluxe':
             STYLING = read_template(TEMPLATE_DIR, 'alex_deluxe.css', "", "")
             CLOZE_STYLE = read_template(TEMPLATE_DIR,
-                                         "alex_deluxe_cloze_style.css", "", "")
+                                        "alex_deluxe_cloze_style.css", "", "")
             FMT_CLOZE_QUESTION = read_template(TEMPLATE_DIR,
-                                                "alex_deluxe_cloze_front.html",
-                                                "", "")
+                                               "alex_deluxe_cloze_front.html",
+                                               "", "")
             FMT_CLOZE_ANSWER = read_template(TEMPLATE_DIR,
-                                              "alex_deluxe_cloze_back.html", "",
-                                              "")
+                                             "alex_deluxe_cloze_back.html", "",
+                                             "")
             FMT_QUESTION = read_template(TEMPLATE_DIR,
-                                          "alex_deluxe_basic_front.html",
-                                          "", "")
+                                         "alex_deluxe_basic_front.html",
+                                         "", "")
             FMT_ANSWER = read_template(TEMPLATE_DIR,
-                                        "alex_deluxe_basic_back.html",
-                                        "", "")
+                                       "alex_deluxe_basic_back.html",
+                                       "", "")
             FMT_INPUT_QUESTION = read_template(TEMPLATE_DIR,
-                                                "alex_deluxe_input_front.html",
-                                                "", "")
+                                               "alex_deluxe_input_front.html",
+                                               "", "")
             FMT_INPUT_ANSWER = read_template(TEMPLATE_DIR,
-                                              "alex_deluxe_input_back.html", "",
-                                              "")
+                                             "alex_deluxe_input_back.html", "",
+                                             "")
         # else notionstyle
         USE_CUSTOM_TEMPLATE = template == 'custom'
         CLOZE_STYLE = CLOZE_STYLE + "\n" + STYLING
