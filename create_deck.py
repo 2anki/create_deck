@@ -16,6 +16,7 @@ from genanki.util import guid_for
 from helpers.get_model import get_model # pylint: disable=import-error
 from helpers.get_model_id import get_model_id # pylint: disable=import-error
 from helpers.read_template import read_template # pylint: disable=import-error
+from helpers.sanitize_tags import sanitize_tags
 from helpers.write_apkg import _write_new_apkg # pylint: disable=import-error
 
 sentry_sdk.init(
@@ -141,6 +142,7 @@ if __name__ == "__main__":
             cards = deck.get("cards", [])
             notes = []
             for card in cards:
+                tags = sanitize_tags(card.get('tags', []))
                 fields = [card["name"], card["back"], ",".join(card["media"])]
                 model = get_model(("basic", basic_model_id, basic_model_name,
                                    BASIC_STYLE, BASIC_FRONT, BASIC_BACK))
@@ -168,12 +170,12 @@ if __name__ == "__main__":
                 if mt.get("useNotionId") and "notionId" in card:
                     GUID = guid_for(card["notionId"])
                     my_note = Note(model, fields=fields,
-                                   sort_field=card["number"], tags=card['tags'],
+                                   sort_field=card["number"], tags=tags,
                                    guid=GUID)
                     notes.append(my_note)
                 else:
                     my_note = Note(model, fields=fields,
-                                   sort_field=card["number"], tags=card['tags'])
+                                   sort_field=card["number"], tags=tags)
                     notes.append(my_note)
                 media_files = media_files + card["media"]
             decks.append(
