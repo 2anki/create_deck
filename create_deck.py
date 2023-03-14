@@ -21,8 +21,7 @@ from helpers.write_apkg import _write_new_apkg  # pylint: disable=import-error
 
 sentry_sdk.init(
     dsn="https://72be99d0475a4bfa9b0f24631571c96a@o1284472.ingest.sentry.io/6495216",
-    traces_sample_rate=1.0
-)
+    traces_sample_rate=1.0)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
