@@ -1,5 +1,5 @@
 """
-This file is a modifcation on one of the test files of genanki[0].
+This file is a modification on one of the test files of genanki[0].
 It's used to create the APKG file from the JSON structure produced
 by the Notion to Anki parser.
 
@@ -13,6 +13,7 @@ import sentry_sdk
 from genanki import Note
 from genanki.util import guid_for
 
+from helpers.cards import get_safe_value
 from helpers.get_model import get_model  # pylint: disable=import-error
 from helpers.get_model_id import get_model_id  # pylint: disable=import-error
 from helpers.read_template import read_template  # pylint: disable=import-error
@@ -159,6 +160,11 @@ if __name__ == "__main__":
                         card["answer"],
                         ",".join(card["media"]),
                     ]
+
+                # Handle surrogates in the front and back
+                for i in range (0, 2):
+                    fields[i] = get_safe_value(fields[i])
+
                 # Cards marked with -1 number means they are breaking
                 # compatability, treat them differently by using their
                 # respective Notion Id.

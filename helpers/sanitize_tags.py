@@ -1,6 +1,8 @@
 """
 Todo move this into a Tag class
 """
+
+
 def sanitize_tags(tags):
     """
     Remove invalid characters from the tag.
