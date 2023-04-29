@@ -39,7 +39,8 @@ if __name__ == "__main__":
         decks = []
 
         # Model / Template stuff
-        mt = data[0]["settings"]
+        mt = data[0].get("settings", {})
+
         STYLING = data[0].get('style', "") or ""
 
         # Retreive template names for user or get the default ones
