@@ -38,6 +38,9 @@ if __name__ == "__main__":
         media_files = []
         decks = []
 
+        if len(data) == 0:
+            sys.exit(1)
+
         # Model / Template stuff
         mt = data[0].get("settings", {})
 
