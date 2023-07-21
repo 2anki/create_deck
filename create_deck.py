@@ -9,7 +9,7 @@ by the Notion to Anki parser.
 import json
 import sys
 
-import sentry_sdk
+import bugsnag
 from genanki import Note
 from genanki.util import guid_for
 
@@ -20,9 +20,10 @@ from helpers.read_template import read_template  # pylint: disable=import-error
 from helpers.sanitize_tags import sanitize_tags
 from helpers.write_apkg import _write_new_apkg  # pylint: disable=import-error
 
-sentry_sdk.init(
-    dsn="https://72be99d0475a4bfa9b0f24631571c96a@o1284472.ingest.sentry.io/6495216",
-    traces_sample_rate=1.0)
+bugsnag.configure(
+        api_key="2f08834329c1aec8ee63d1586c92bd39",
+        project_root=os.path.dirname(os.path.abspath(__file__)),
+)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
