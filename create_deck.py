@@ -8,6 +8,7 @@ by the Notion to Anki parser.
 
 import json
 import sys
+import os
 
 import bugsnag
 from genanki import Note
