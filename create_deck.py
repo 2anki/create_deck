@@ -148,10 +148,12 @@ if __name__ == "__main__":
             notes = []
             for card in cards:
                 tags = sanitize_tags(card.get('tags', []))
-                fields = [card["name"], card["back"], ",".join(card["media"])]
+                front = card.get("name", "")
+                back = card.get("back", "")
+                fields = [front, back, ",".join(card["media"])]
                 model = get_model(("basic", basic_model_id, basic_model_name,
                                    BASIC_STYLE, BASIC_FRONT, BASIC_BACK))
-                if card.get('cloze', False) and "{{c" in card["name"]:
+                if card.get('cloze', False) and "{{c" in front:
                     model = get_model(
                         ("cloze", cloze_model_id, cloze_model_name,
                          CLOZE_STYLE, CLOZE_FRONT, CLOZE_BACK))
@@ -161,8 +163,8 @@ if __name__ == "__main__":
                         ("input", input_model_id, input_model_name,
                          INPUT_STYLE, INPUT_FRONT, INPUT_BACK))
                     fields = [
-                        card["name"].replace("{{type:Input}}", ""),
-                        card["back"],
+                        front.replace("{{type:Input}}", ""),
+                        back,
                         card["answer"],
                         ",".join(card["media"]),
                     ]
