@@ -15,11 +15,11 @@ from genanki import Note
 from genanki.util import guid_for
 
 from helpers.cards import get_safe_value
-from helpers.get_model import get_model  # pylint: disable=import-error
-from helpers.get_model_id import get_model_id  # pylint: disable=import-error
-from helpers.read_template import read_template  # pylint: disable=import-error
+from helpers.get_model import get_model
+from helpers.get_model_id import get_model_id
+from helpers.read_template import read_template
 from helpers.sanitize_tags import sanitize_tags
-from helpers.write_apkg import _write_new_apkg  # pylint: disable=import-error
+from helpers.write_apkg import _write_new_apkg
 
 bugsnag.configure(
         api_key="2f08834329c1aec8ee63d1586c92bd39",
