@@ -1,13 +1,13 @@
+"""
+This module provides functionality to write a new Anki package file (.apkg) using provided deck payloads and media files.
+"""
+
 import os
 import sys
 import re
 import tempfile
 
 from genanki import Deck, Package
-
-"""
-This module provides functionality to write a new Anki package file (.apkg) using provided deck payloads and media files.
-"""
 
 def sanitize_filename(filename):
     """
@@ -62,14 +62,14 @@ def _write_new_apkg(deck_payloads, media_files):
 
         try:
             package.write_to_file(tmp_file.name)
-        except OSError as e:
-            if e.errno == 36:  # File name too long
+        except OSError as error:
+            if error.errno == 36:  # File name too long
                 tmp_file.name = (
                     f'{truncated_name[:max_name_length - 10]}-truncated-{first_deck_id}.apkg'
                 )
                 package.write_to_file(tmp_file.name)
             else:
-                raise e  # Re-raise other exceptions
+                raise error  # Re-raise other exceptions
 
     final_path = os.path.join(os.getcwd(), tmp_file.name)
     os.rename(tmp_file.name, final_path)
