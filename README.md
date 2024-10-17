@@ -1,6 +1,7 @@
 # create_deck
 
 This module is responsible for creating Anki flashcards for 2anki.net.
+You can report issues in the [server](https://github.com/2anki/server/issues) repository.
 
 ## API
 
