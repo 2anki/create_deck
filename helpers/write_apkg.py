@@ -66,12 +66,14 @@ def _write_new_apkg(deck_payloads, media_files):
             if e.errno == 36:  # File name too long
                 # Handle the error, e.g., shorten the filename or move to a different directory
                 print("File name too long. Shortening filename.")
-                tmp_file.name = f'{truncated_name[:max_name_length - 10]}-truncated-{first_deck_id}.apkg'
+                tmp_file.name = (
+                    f'{truncated_name[:max_name_length - 10]}-truncated-{first_deck_id}.apkg'
+                )
                 package.write_to_file(tmp_file.name)
             else:
                 raise e  # Re-raise other exceptions
 
-    final_path = os.path.join(os.getcwd() , tmp_file.name)
+    final_path = os.path.join(os.getcwd(), tmp_file.name)
     os.rename(tmp_file.name, final_path)
 
     sys.stdout.write(final_path)
