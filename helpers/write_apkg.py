@@ -1,11 +1,13 @@
-import os
-import sys
-import re
-from genanki import Deck, Package
-
 """
 This module provides functionality to write a new Anki package file (.apkg) using provided deck payloads and media files.
 """
+
+import os
+import sys
+import re
+import tempfile
+
+from genanki import Deck, Package
 
 def sanitize_filename(filename):
     """
@@ -44,7 +46,7 @@ def _write_new_apkg(deck_payloads, media_files):
     package = Package(decks)
     package.media_files = media_files
 
-    # Ensure deck_payload is defined before using it
+    # Ensure deck_payloads is defined before using it
     if deck_payloads:
         sanitized_name = sanitize_filename(deck_payloads[0]["name"])
     else:
@@ -53,8 +55,23 @@ def _write_new_apkg(deck_payloads, media_files):
     max_name_length = 255 - len(first_deck_id) - len('.apkg') - 1
     truncated_name = sanitized_name[:max_name_length]
 
-    output_filename = f'{truncated_name}-{first_deck_id}.apkg'
+    # Use a temporary file to avoid file name too long errors
+    with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+        output_filename = f'{truncated_name}-{first_deck_id}.apkg'
+        tmp_file.name = output_filename
 
-    package.write_to_file(output_filename)
+        try:
+            package.write_to_file(tmp_file.name)
+        except OSError as error:
+            if error.errno == 36:  # File name too long
+                tmp_file.name = (
+                    f'{truncated_name[:max_name_length - 10]}-truncated-{first_deck_id}.apkg'
+                )
+                package.write_to_file(tmp_file.name)
+            else:
+                raise error  # Re-raise other exceptions
 
-    sys.stdout.write(os.getcwd() + "/" + output_filename)
+    final_path = os.path.join(os.getcwd(), tmp_file.name)
+    os.rename(tmp_file.name, final_path)
+
+    sys.stdout.write(final_path)
