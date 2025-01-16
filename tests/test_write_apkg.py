@@ -122,5 +122,5 @@ class TestWriteApkg(TestCase):
                 mock_rename.assert_called_once()
                 
                 # Verify the default name is used
-                src, dst = mock_rename.call_args[0]
-                self.assertTrue('default-' in dst) 
+                _, dst = mock_rename.call_args[0]
+                self.assertIn("default-", dst)
