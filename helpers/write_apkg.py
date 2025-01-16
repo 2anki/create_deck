@@ -21,11 +21,7 @@ def sanitize_filename(filename):
     sanitized = sanitized.replace(' ', '-')
     return sanitized
 
-def _write_new_apkg(deck_payloads, media_files):
-    """
-    Write a new Anki package file (.apkg) using the provided deck payloads and media files.
-    The filename is sanitized and a unique identifier is used to avoid filename length issues.
-    """
+def create_decks(deck_payloads):
     first_deck_id = ""
     decks = []
 
@@ -37,22 +33,16 @@ def _write_new_apkg(deck_payloads, media_files):
         )
 
         if not first_deck_id:
-            first_deck_id = str(deck_payload["id"])  # Convert to string
+            first_deck_id = str(deck_payload["id"])
 
         for note in deck_payload["notes"]:
             deck.add_note(note)
 
         decks.append(deck)
 
-    package = Package(decks)
-    package.media_files = media_files
+    return decks, first_deck_id
 
-    if deck_payloads:
-        sanitized_name = sanitize_filename(deck_payloads[0]["name"])
-    else:
-        sanitized_name = "default"
-
-    # Create a unique filename for the temporary file
+def write_package_to_temp_file(package):
     temp_filename = f"temp_apkg_{uuid.uuid4().hex}.apkg"
     temp_path = os.path.join(tempfile.gettempdir(), temp_filename)
 
@@ -62,9 +52,12 @@ def _write_new_apkg(deck_payloads, media_files):
         print(f"Error writing to temporary file: {e}")
         raise
 
-    # Create the final filename, truncate if necessary
+    return temp_path
+
+def rename_temp_file(temp_path, sanitized_name, first_deck_id):
     base_filename = f'{sanitized_name}-{first_deck_id}'
-    max_filename_length = 255  # Maximum filename length for most systems
+    max_filename_length = 255
+
     if len(base_filename) + len(".apkg") > max_filename_length:
         base_filename = base_filename[:max_filename_length - len(".apkg") - 10] + "-trunc"
 
@@ -74,8 +67,7 @@ def _write_new_apkg(deck_payloads, media_files):
     try:
         os.rename(temp_path, final_path)
     except OSError as e:
-        # Handle potential long filename issues on final rename
-        if e.errno == 36:  # OSError: [Errno 36] File name too long
+        if e.errno == 36:
             short_final_filename = f"deck_{uuid.uuid4().hex[:8]}.apkg"
             final_path = os.path.join(os.getcwd(), short_final_filename)
             os.rename(temp_path, final_path)
@@ -83,5 +75,16 @@ def _write_new_apkg(deck_payloads, media_files):
         else:
             print(f"Error renaming file: {e}")
             raise
+
+    return final_path
+
+def _write_new_apkg(deck_payloads, media_files):
+    decks, first_deck_id = create_decks(deck_payloads)
+    package = Package(decks)
+    package.media_files = media_files
+
+    sanitized_name = sanitize_filename(deck_payloads[0]["name"]) if deck_payloads else "default"
+    temp_path = write_package_to_temp_file(package)
+    final_path = rename_temp_file(temp_path, sanitized_name, first_deck_id)
 
     sys.stdout.write(final_path)
