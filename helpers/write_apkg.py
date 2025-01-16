@@ -22,6 +22,15 @@ def sanitize_filename(filename):
     return sanitized
 
 def create_decks(deck_payloads):
+    """
+    Create decks from the provided deck payloads.
+
+    Args:
+        deck_payloads (list): List of dictionaries containing deck information.
+
+    Returns:
+        tuple: A tuple containing the list of created decks and the ID of the first deck.
+    """
     first_deck_id = ""
     decks = []
 
@@ -43,6 +52,15 @@ def create_decks(deck_payloads):
     return decks, first_deck_id
 
 def write_package_to_temp_file(package):
+    """
+    Write the package to a temporary file.
+
+    Args:
+        package (Package): The package to be written to a file.
+
+    Returns:
+        str: The path to the temporary file.
+    """
     temp_filename = f"temp_apkg_{uuid.uuid4().hex}.apkg"
     temp_path = os.path.join(tempfile.gettempdir(), temp_filename)
 
@@ -55,6 +73,17 @@ def write_package_to_temp_file(package):
     return temp_path
 
 def rename_temp_file(temp_path, sanitized_name, first_deck_id):
+    """
+    Rename the temporary file to a final filename.
+
+    Args:
+        temp_path (str): The path to the temporary file.
+        sanitized_name (str): The sanitized name for the final file.
+        first_deck_id (str): The ID of the first deck.
+
+    Returns:
+        str: The path to the final file.
+    """
     base_filename = f'{sanitized_name}-{first_deck_id}'
     max_filename_length = 255
 
@@ -79,6 +108,13 @@ def rename_temp_file(temp_path, sanitized_name, first_deck_id):
     return final_path
 
 def _write_new_apkg(deck_payloads, media_files):
+    """
+    Write a new Anki package file (.apkg) using provided deck payloads and media files.
+
+    Args:
+        deck_payloads (list): List of dictionaries containing deck information.
+        media_files (list): List of media files to be included in the package.
+    """
     decks, first_deck_id = create_decks(deck_payloads)
     package = Package(decks)
     package.media_files = media_files
