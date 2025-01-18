@@ -170,8 +170,8 @@ if __name__ == "__main__":
                     ]
 
                 # Handle surrogates in the front and back
-                for i in range (0, 2):
-                    fields[i] = get_safe_value(fields[i])
+                fields[0] = get_safe_value(fields[0])
+                fields[1] = get_safe_value(fields[1])
 
                 # Cards marked with -1 number means they are breaking
                 # compatability, treat them differently by using their
