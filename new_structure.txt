@@ -1,0 +1,17 @@
+2anki/
+├── api/
+│   ├── __init__.py
+│   ├── routes.py
+│   └── schemas.py
+├── core/
+│   ├── __init__.py
+│   ├── deck_builder.py
+│   ├── models.py
+│   └── processors.py
+├── services/
+│   ├── __init__.py
+│   ├── memory_service.py
+│   └── llm_service.py
+└── utils/
+    ├── __init__.py
+    └── helpers.py 

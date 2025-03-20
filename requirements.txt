@@ -1,7 +1,11 @@
 # make sure to update the alemayhu/base-image-n2a
 # and pull it in the live server: ssh root@2anki.net docker pull alemayhu/base-image-n2a
+fastapi>=0.68.0
+uvicorn>=0.15.0
+redis>=4.0.0
 genanki==0.13.1
 pydantic>=1.8.0,<3.0.0
+python-multipart>=0.0.5
 pylint>=2.17.0
 bugsnag>=4.5.0
 ftfy~=6.3.1
