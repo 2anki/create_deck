@@ -9,7 +9,13 @@ load_dotenv()
 # Database configuration
 DATABASE_URL = os.getenv(
     'DATABASE_URL',
-    'postgresql://postgres:postgres@localhost:5432/2anki'
+    'postgresql://{user}:{password}@{host}:{port}/{database}'.format(
+        user=os.getenv('DB_USER', 'aa'),
+        password=os.getenv('DB_PASSWORD', ''),
+        host=os.getenv('DB_HOST', 'localhost'),
+        port=os.getenv('DB_PORT', '5432'),
+        database=os.getenv('DB_NAME', 'n')
+    )
 )
 
 # Create engine

@@ -20,7 +20,7 @@ async def status():
     Returns:
         dict: A dictionary containing the status message
     """
-    return {"message": "Ping me maybe? 🎶"}
+    return "Ping me maybe? 🎶"
 
 if __name__ == "__main__":
     import uvicorn
