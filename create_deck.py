@@ -6,8 +6,10 @@ by the Notion to Anki parser.
 [0]: https://github.com/kerrickstaley/genanki
 """
 
+import traceback
 import json
 import sys
+import os
 
 from genanki import Note
 from genanki.util import guid_for
@@ -208,4 +210,3 @@ TEMPLATE_DIR: {TEMPLATE_DIR if 'TEMPLATE_DIR' in locals() else 'N/A'}
 """
         send_error_email(f"[ERROR] [2anki.net] - {str(e)}", error_details)
         raise
-
