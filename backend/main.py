@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="2anki Backend API")
+app = FastAPI(title="2anki New API")
 
 # Configure CORS
 app.add_middleware(
