@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+"""
+Generate SQLAlchemy models from database schema using SQLAlchemy reflection
+"""
+
+import os
+from dotenv import load_dotenv
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+load_dotenv()
+
+# Get database credentials from environment
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_NAME = os.getenv('DB_NAME')
+
+# Validate required variables
+required_vars = ['DB_USER', 'DB_PASSWORD', 'DB_HOST', 'DB_PORT', 'DB_NAME']
+missing_vars = [var for var in required_vars if not os.getenv(var)]
+if missing_vars:
+    raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
+
+# Construct DATABASE_URL
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
+# Create engine and session
+engine = create_engine(DATABASE_URL)
+Session = sessionmaker(bind=engine)
+Base = declarative_base()
+
+# Reflect the database schema
+metadata = MetaData()
+metadata.reflect(bind=engine)
+
+# Generate models
+with open('backend/models.py', 'w') as f:
+    f.write("""
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
+
+""")
+
+    # Generate model classes for each table
+    for table_name, table in metadata.tables.items():
+        f.write(f"\n\nclass {table_name.title()}(Base):\n")
+        f.write(f"    __tablename__ = '{table_name}'\n\n")
+        
+        # Write columns
+        for column in table.columns:
+            column_type = str(column.type)
+            f.write(f"    {column.name} = Column({column_type})\n")
+        
+        f.write("\n")
+
+print("Models generated successfully!")

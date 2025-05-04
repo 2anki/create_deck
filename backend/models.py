@@ -1,36 +1,258 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
+
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from .db import Base
+from sqlalchemy.ext.declarative import declarative_base
 
-class User(Base):
-    __tablename__ = "users"
+Base = declarative_base()
 
-    id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-class Deck(Base):
-    __tablename__ = "decks"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    description = Column(String)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+class Access_Tokens(Base):
+    __tablename__ = 'access_tokens'
 
-    user = relationship("User")
+    owner = Column(INTEGER)
+    token = Column(TEXT)
+    created_at = Column(TIMESTAMP)
+    host = Column(VARCHAR(255))
 
-class Card(Base):
-    __tablename__ = "cards"
 
-    id = Column(Integer, primary_key=True, index=True)
-    front = Column(String, nullable=False)
-    back = Column(String, nullable=False)
-    deck_id = Column(Integer, ForeignKey("decks.id"))
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    deck = relationship("Deck")
+class Subscriptions(Base):
+    __tablename__ = 'subscriptions'
+
+    id = Column(INTEGER)
+    email = Column(VARCHAR(255))
+    active = Column(BOOLEAN)
+    payload = Column(JSON)
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+    linked_email = Column(VARCHAR(255))
+
+
+
+class Google_Drive_Uploads(Base):
+    __tablename__ = 'google_drive_uploads'
+
+    id = Column(VARCHAR(255))
+    description = Column(VARCHAR(255))
+    embedUrl = Column(VARCHAR(255))
+    iconUrl = Column(VARCHAR(255))
+    lastEditedUtc = Column(BIGINT)
+    mimeType = Column(VARCHAR(255))
+    name = Column(VARCHAR(255))
+    organizationDisplayName = Column(VARCHAR(255))
+    parentId = Column(VARCHAR(255))
+    serviceId = Column(VARCHAR(255))
+    sizeBytes = Column(BIGINT)
+    type = Column(VARCHAR(255))
+    url = Column(VARCHAR(255))
+    owner = Column(INTEGER)
+
+
+
+class Jobs(Base):
+    __tablename__ = 'jobs'
+
+    id = Column(INTEGER)
+    owner = Column(VARCHAR(255))
+    object_id = Column(VARCHAR(255))
+    status = Column(VARCHAR(255))
+    created_at = Column(TIMESTAMP)
+    last_edited_time = Column(TIMESTAMP)
+    title = Column(TEXT)
+    type = Column(VARCHAR(255))
+
+
+
+class Favorites(Base):
+    __tablename__ = 'favorites'
+
+    owner = Column(INTEGER)
+    object_id = Column(TEXT)
+    type = Column(VARCHAR(255))
+
+
+
+class Users(Base):
+    __tablename__ = 'users'
+
+    id = Column(INTEGER)
+    name = Column(VARCHAR(255))
+    email = Column(VARCHAR(255))
+    password = Column(VARCHAR(255))
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+    reset_token = Column(VARCHAR(255))
+    patreon = Column(BOOLEAN)
+    picture = Column(VARCHAR(255))
+
+
+
+class Uploads(Base):
+    __tablename__ = 'uploads'
+
+    id = Column(INTEGER)
+    owner = Column(INTEGER)
+    key = Column(TEXT)
+    filename = Column(TEXT)
+    object_id = Column(TEXT)
+    size_mb = Column(REAL)
+    external_url = Column(TEXT)
+
+
+
+class Templates(Base):
+    __tablename__ = 'templates'
+
+    id = Column(INTEGER)
+    owner = Column(VARCHAR(255))
+    payload = Column(JSON)
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+
+
+
+class Blocks(Base):
+    __tablename__ = 'blocks'
+
+    id = Column(INTEGER)
+    owner = Column(VARCHAR(255))
+    object_id = Column(VARCHAR(255))
+    payload = Column(JSON)
+    fetch = Column(INTEGER)
+    created_at = Column(TIMESTAMP)
+    last_edited_time = Column(TIMESTAMP)
+
+
+
+class Dropbox_Uploads(Base):
+    __tablename__ = 'dropbox_uploads'
+
+    id = Column(INTEGER)
+    bytes = Column(INTEGER)
+    icon = Column(VARCHAR(255))
+    dropbox_id = Column(VARCHAR(255))
+    isDir = Column(BOOLEAN)
+    link = Column(VARCHAR(255))
+    linkType = Column(VARCHAR(255))
+    name = Column(VARCHAR(255))
+    owner = Column(INTEGER)
+
+
+
+class Feedback(Base):
+    __tablename__ = 'feedback'
+
+    id = Column(INTEGER)
+    name = Column(VARCHAR(255))
+    email = Column(VARCHAR(255))
+    message = Column(TEXT)
+    attachments = Column(JSON)
+    is_acknowledged = Column(BOOLEAN)
+    created_at = Column(TIMESTAMP)
+
+
+
+class Ki_Files(Base):
+    __tablename__ = 'ki_files'
+
+    id = Column(INTEGER)
+    name = Column(VARCHAR(255))
+    path = Column(VARCHAR(255))
+    user_id = Column(VARCHAR(255))
+    created_at = Column(TIMESTAMP)
+    expires_at = Column(TIMESTAMP)
+
+
+
+class Settings(Base):
+    __tablename__ = 'settings'
+
+    id = Column(INTEGER)
+    owner = Column(VARCHAR(255))
+    object_id = Column(VARCHAR(255))
+    payload = Column(JSON)
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+
+
+
+class Parser_Rules(Base):
+    __tablename__ = 'parser_rules'
+
+    id = Column(INTEGER)
+    object_id = Column(VARCHAR(255))
+    flashcard_is = Column(VARCHAR(255))
+    deck_is = Column(VARCHAR(255))
+    sub_deck_is = Column(VARCHAR(255))
+    tags_is = Column(VARCHAR(255))
+    owner = Column(INTEGER)
+    email_notification = Column(BOOLEAN)
+
+
+
+class Notion_Tokens(Base):
+    __tablename__ = 'notion_tokens'
+
+    owner = Column(INTEGER)
+    token = Column(TEXT)
+    created_at = Column(TIMESTAMP)
+    token_type = Column(VARCHAR(255))
+    bot_id = Column(VARCHAR(255))
+    workspace_name = Column(VARCHAR(255))
+    workspace_icon = Column(VARCHAR(255))
+    workspace_id = Column(VARCHAR(255))
+    notion_owner = Column(JSON)
+    encrypted = Column(BOOLEAN)
+
+
+
+class Ki_Decks(Base):
+    __tablename__ = 'ki_decks'
+
+    id = Column(INTEGER)
+    user_id = Column(VARCHAR(255))
+    deck_info = Column(JSON)
+    workspace_location = Column(VARCHAR(255))
+    created_at = Column(TIMESTAMP)
+    expires_at = Column(TIMESTAMP)
+
+
+
+class Knex_Migrations_Lock(Base):
+    __tablename__ = 'knex_migrations_lock'
+
+    index = Column(INTEGER)
+    is_locked = Column(INTEGER)
+
+
+
+class Migrations(Base):
+    __tablename__ = 'migrations'
+
+    id = Column(INTEGER)
+    name = Column(TEXT)
+    batch = Column(INTEGER)
+    migration_time = Column(TIMESTAMP)
+
+
+
+class Knex_Migrations(Base):
+    __tablename__ = 'knex_migrations'
+
+    id = Column(INTEGER)
+    name = Column(VARCHAR(255))
+    batch = Column(INTEGER)
+    migration_time = Column(TIMESTAMP)
+
+
+
+class Sessions(Base):
+    __tablename__ = 'sessions'
+
+    id = Column(INTEGER)
+    userId = Column(VARCHAR(255))
+    data = Column(JSONB)
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+
