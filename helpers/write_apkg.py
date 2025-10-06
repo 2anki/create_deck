@@ -123,4 +123,9 @@ def _write_new_apkg(deck_payloads, media_files):
     temp_path = write_package_to_temp_file(package)
     final_path = rename_temp_file(temp_path, sanitized_name, first_deck_id)
 
-    sys.stdout.write(final_path)
+    # Handle Unicode characters properly for Windows console
+    try:
+        sys.stdout.write(final_path)
+    except UnicodeEncodeError:
+        # If Unicode encoding fails, encode to bytes and write to stdout buffer
+        sys.stdout.buffer.write(final_path.encode('utf-8'))
