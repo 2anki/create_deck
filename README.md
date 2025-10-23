@@ -130,7 +130,17 @@ export default class Settings {
 
 ## Roadmap
 
+a couple of planned items for the future.
+
+### Near future
+
 - Refactor the code base to use Python best practice
 - Create API to allow for consumption via HTTP
+
+### Later
+
+- Image Occlusion support
 - Introduce progress / estimates on conversion job
 - Read directly from 2anki db
+- Improve error reporting and logging
+- Optimize deck creation for large payloads and media files.
