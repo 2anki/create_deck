@@ -130,6 +130,7 @@ export default class Settings {
 
 ## Roadmap
 
+- Refactor the code base to use Python best practice
 - Create API to allow for consumption via HTTP
 - Introduce progress / estimates on conversion job
 - Read directly from 2anki db
