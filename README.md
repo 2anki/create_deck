@@ -130,4 +130,6 @@ export default class Settings {
 
 ## Roadmap
 
-TODO: flesh out the details here.
+- Create API to allow for consumption via HTTP
+- Introduce progress / estimates on conversion job
+- Read directly from 2anki db
