@@ -12,9 +12,6 @@ ignore-patterns=^\.#
 # Enable persistent caching
 persistent=yes
 
-# Enable suggestion mode for user-friendly hints
-suggestion-mode=yes
-
 # Set the minimum score threshold
 fail-under=10
 
