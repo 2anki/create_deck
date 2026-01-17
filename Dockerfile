@@ -1,4 +1,4 @@
-FROM python:3.13.11
+FROM python:3.14.2
 
 WORKDIR /api
 
