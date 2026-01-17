@@ -177,10 +177,10 @@ if __name__ == "__main__":
                         card["number"] = card["notionId"]
 
                     if mt.get("useNotionId") and "notionId" in card:
-                        GUID = guid_for(card["notionId"])
+                        guid = guid_for(card["notionId"])
                         my_note = Note(model, fields=fields,
                                        sort_field=card["number"], tags=tags,
-                                       guid=GUID)
+                                       guid=guid)
                         notes.append(my_note)
                     else:
                         my_note = Note(model, fields=fields,
