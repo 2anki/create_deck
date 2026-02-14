@@ -5,15 +5,15 @@ You can report issues in the [server](https://github.com/2anki/server/issues) re
 
 ## Dependencies
 
-This project requires the following main dependencies:
-- `genanki==0.13.1` - Core library for creating Anki packages
-- `pydantic>=1.8.0,<3.0.0` - Data validation
-- `ftfy~=6.3.1` - Text encoding fixes
-- `pylint>=2.17.0` - Code linting
-- `pytest` - Testing framework
-- `mock` - Testing utilities
+This project requires Python 3.x and the following main dependencies:
+- `genanki` - Core library for creating Anki packages
+- `pydantic` - Data validation and settings management
+- `ftfy` - Text encoding fixes for proper Unicode handling
+- `pylint` - Code linting (development)
+- `pytest` - Testing framework (development)
+- `mock` - Testing utilities (development)
 
-Install dependencies with:
+Install all dependencies with exact versions:
 ```bash
 pip install -r requirements.txt
 ```
