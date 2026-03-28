@@ -3,7 +3,7 @@ import tempfile
 from unittest import TestCase, mock
 from genanki import Note, Model
 
-from helpers.write_apkg import sanitize_filename, _write_new_apkg
+from helpers.write_apkg import sanitize_filename, _write_new_apkg, rename_temp_file
 
 class TestWriteApkg(TestCase):
     def setUp(self):
@@ -124,3 +124,68 @@ class TestWriteApkg(TestCase):
                 # Verify the default name is used
                 _, dst = mock_rename.call_args[0]
                 self.assertIn("default-", dst)
+
+    def test_sanitize_filename_security(self):
+        """Test that sanitize_filename prevents path traversal attacks."""
+        dangerous_cases = [
+            ("../../../etc/passwd", "etcpasswd"),
+            ("..\\..\\windows\\system32", "windowssystem32"),
+            ("/etc/passwd", "etcpasswd"),
+            ("C:\\Windows\\System32", "CWindowsSystem32"),
+            ("./config/secrets", "configsecrets"),
+            ("../test", "test"),
+            ("test/../danger", "testdanger"),
+        ]
+        
+        for dangerous_input, expected_safe in dangerous_cases:
+            result = sanitize_filename(dangerous_input)
+            self.assertEqual(result, expected_safe, 
+                           f"Failed to sanitize '{dangerous_input}' properly")
+            # Ensure no path separators remain
+            self.assertNotIn('/', result)
+            self.assertNotIn('\\', result)
+            self.assertNotIn('..', result)
+
+    def test_rename_temp_file_security(self):
+        """Test that rename_temp_file prevents path traversal attacks."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Create a temporary file to rename
+            temp_file = os.path.join(tmpdir, "temp.apkg")
+            with open(temp_file, 'w') as f:
+                f.write("test content")
+            
+            with mock.patch('os.getcwd', return_value=tmpdir):
+                # Test dangerous inputs that should be blocked
+                dangerous_cases = [
+                    ("../../../danger", "1234"),
+                    ("normal", "../../../etc/passwd"),
+                    ("../up", "../back"),
+                ]
+                
+                for dangerous_name, dangerous_id in dangerous_cases:
+                    with self.assertRaises(ValueError) as cm:
+                        rename_temp_file(temp_file, dangerous_name, dangerous_id)
+                    self.assertIn("Path traversal attempt detected", str(cm.exception))
+                
+                # Test that safe inputs work correctly
+                safe_result = rename_temp_file(temp_file, "safe_name", "1234")
+                expected_path = os.path.join(tmpdir, "safe_name-1234.apkg")
+                self.assertEqual(safe_result, expected_path)
+                self.assertTrue(os.path.exists(safe_result))
+
+    def test_rename_temp_file_basename_only(self):
+        """Test that rename_temp_file works with safe filenames."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            temp_file = os.path.join(tmpdir, "temp.apkg")
+            with open(temp_file, 'w') as f:
+                f.write("test content")
+            
+            with mock.patch('os.getcwd', return_value=tmpdir):
+                # Test with safe inputs (no path separators)
+                result = rename_temp_file(temp_file, "safe_name", "safe_id")
+                expected_filename = "safe_name-safe_id.apkg"
+                self.assertTrue(result.endswith(expected_filename))
+                self.assertTrue(os.path.exists(result))
+                
+                # Verify the file is in the expected directory
+                self.assertEqual(os.path.dirname(result), tmpdir)
