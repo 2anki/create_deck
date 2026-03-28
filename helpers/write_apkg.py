@@ -74,6 +74,32 @@ def write_package_to_temp_file(package):
 
     return temp_path
 
+def _validate_path_safety(name_str, id_str):
+    """Validate inputs for path traversal attempts."""
+    dangerous_patterns = ['..', '/', '\\', ':']
+    for pattern in dangerous_patterns:
+        if pattern in name_str or pattern in id_str:
+            raise ValueError("Path traversal attempt detected in filename")
+
+def _create_safe_filename(sanitized_name, first_deck_id):
+    """Create a safe filename from sanitized inputs."""
+    safe_name = os.path.basename(str(sanitized_name))
+    safe_deck_id = os.path.basename(str(first_deck_id))
+    base_filename = f'{safe_name}-{safe_deck_id}'
+
+    if len(base_filename) + len(".apkg") > 255:
+        base_filename = base_filename[:245] + "-trunc"
+
+    return os.path.basename(f"{base_filename}.apkg")
+
+def _verify_path_within_cwd(final_path, cwd):
+    """Verify the final path is within the current working directory."""
+    real_final_path = os.path.realpath(final_path)
+    real_cwd = os.path.realpath(cwd)
+
+    if not real_final_path.startswith(real_cwd + os.sep) and not real_final_path == real_cwd:
+        raise ValueError("Path traversal attempt detected in final path")
+
 def rename_temp_file(temp_path, sanitized_name, first_deck_id):
     """
     Rename the temporary file to a final filename.
@@ -86,60 +112,29 @@ def rename_temp_file(temp_path, sanitized_name, first_deck_id):
     Returns:
         str: The path to the final file.
     """
-    # Check for path traversal attempts in the original inputs
     name_str = str(sanitized_name)
     id_str = str(first_deck_id)
-    
-    # Detect dangerous path components before sanitization
-    dangerous_patterns = ['..', '/', '\\', ':']
-    for pattern in dangerous_patterns:
-        if pattern in name_str or pattern in id_str:
-            raise ValueError("Path traversal attempt detected in filename")
-    
-    # Now safely extract just the filename components
-    safe_name = os.path.basename(name_str)
-    safe_deck_id = os.path.basename(id_str)
-    
-    base_filename = f'{safe_name}-{safe_deck_id}'
-    max_filename_length = 255
 
-    if len(base_filename) + len(".apkg") > max_filename_length:
-        base_filename = base_filename[:max_filename_length - len(".apkg") - 10] + "-trunc"
+    _validate_path_safety(name_str, id_str)
 
-    final_filename = f"{base_filename}.apkg"
-    # Ensure the filename contains no path separators (double-check)
-    final_filename = os.path.basename(final_filename)
-    
-    # Construct the final path safely within the current working directory
+    final_filename = _create_safe_filename(sanitized_name, first_deck_id)
     cwd = os.getcwd()
     final_path = os.path.join(cwd, final_filename)
-    
-    # Verify that the resolved path is still within the current working directory
-    real_final_path = os.path.realpath(final_path)
-    real_cwd = os.path.realpath(cwd)
-    
-    if not real_final_path.startswith(real_cwd + os.sep) and not real_final_path == real_cwd:
-        raise ValueError("Path traversal attempt detected in final path")
+
+    _verify_path_within_cwd(final_path, cwd)
 
     try:
         os.rename(temp_path, final_path)
     except OSError as e:
         if e.errno == 36:
-            short_final_filename = f"deck_{uuid.uuid4().hex[:8]}.apkg"
-            # Apply the same safety checks to the fallback filename
-            short_final_filename = os.path.basename(short_final_filename)
-            final_path = os.path.join(cwd, short_final_filename)
-            
-            # Verify the fallback path is safe too
-            real_final_path = os.path.realpath(final_path)
-            if not real_final_path.startswith(real_cwd + os.sep) and not real_final_path == real_cwd:
-                raise ValueError("Path traversal attempt detected in fallback filename")
-                
+            fallback_filename = f"deck_{uuid.uuid4().hex[:8]}.apkg"
+            final_path = os.path.join(cwd, fallback_filename)
+            _verify_path_within_cwd(final_path, cwd)
             os.rename(temp_path, final_path)
             print(f"Warning: Filename too long. Saved as {final_path}")
         else:
             print(f"Error renaming file: {e}")
-            raise
+            raise ValueError("Failed to rename file") from e
 
     return final_path
 
