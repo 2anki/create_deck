@@ -124,16 +124,14 @@ def rename_temp_file(temp_path, sanitized_name, first_deck_id):
     _verify_path_within_cwd(final_path, cwd)
 
     try:
-        os.rename(temp_path, final_path)
+        os.replace(temp_path, final_path)
     except OSError as e:
         if e.errno == 36:
             fallback_filename = f"deck_{uuid.uuid4().hex[:8]}.apkg"
             final_path = os.path.join(cwd, fallback_filename)
             _verify_path_within_cwd(final_path, cwd)
-            os.rename(temp_path, final_path)
-            print(f"Warning: Filename too long. Saved as {final_path}")
+            os.replace(temp_path, final_path)
         else:
-            print(f"Error renaming file: {e}")
             raise ValueError("Failed to rename file") from e
 
     return final_path
