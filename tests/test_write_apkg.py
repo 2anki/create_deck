@@ -27,8 +27,8 @@ class TestWriteApkg(TestCase):
             self.assertEqual(sanitize_filename(input_name), expected)
 
     @mock.patch('helpers.write_apkg.Package')
-    @mock.patch('os.rename')
-    def test_write_new_apkg_single_deck(self, mock_rename, mock_package):
+    @mock.patch('helpers.write_apkg.os.replace')
+    def test_write_new_apkg_single_deck(self, mock_replace, mock_package):
         note = Note(model=self.test_model, fields=['Q1', 'A1'])
         deck_payload = {
             "id": 1234567890,
@@ -49,11 +49,11 @@ class TestWriteApkg(TestCase):
                 
                 # Verify file operations
                 mock_package.return_value.write_to_file.assert_called_once()
-                mock_rename.assert_called_once()
+                mock_replace.assert_called_once()
 
     @mock.patch('helpers.write_apkg.Package')
-    @mock.patch('os.rename')
-    def test_write_new_apkg_multiple_decks(self, mock_rename, mock_package):
+    @mock.patch('helpers.write_apkg.os.replace')
+    def test_write_new_apkg_multiple_decks(self, mock_replace, mock_package):
         note1 = Note(model=self.test_model, fields=['Q1', 'A1'])
         note2 = Note(model=self.test_model, fields=['Q2', 'A2'])
         
@@ -84,11 +84,11 @@ class TestWriteApkg(TestCase):
                 
                 # Verify file operations
                 mock_package.return_value.write_to_file.assert_called_once()
-                mock_rename.assert_called_once()
+                mock_replace.assert_called_once()
 
     @mock.patch('helpers.write_apkg.Package')
-    @mock.patch('os.rename')
-    def test_write_new_apkg_with_media(self, mock_rename, mock_package):
+    @mock.patch('helpers.write_apkg.os.replace')
+    def test_write_new_apkg_with_media(self, mock_replace, mock_package):
         note = Note(model=self.test_model, fields=['Q1', 'A1'])
         deck_payload = {
             "id": 1234567890,
@@ -108,21 +108,21 @@ class TestWriteApkg(TestCase):
                 
                 # Verify file operations
                 mock_package.return_value.write_to_file.assert_called_once()
-                mock_rename.assert_called_once()
+                mock_replace.assert_called_once()
 
     @mock.patch('helpers.write_apkg.Package')
-    @mock.patch('os.rename')
-    def test_write_new_apkg_empty_deck_list(self, mock_rename, mock_package):
+    @mock.patch('helpers.write_apkg.os.replace')
+    def test_write_new_apkg_empty_deck_list(self, mock_replace, mock_package):
         with tempfile.TemporaryDirectory() as tmpdir:
             with mock.patch('os.getcwd', return_value=tmpdir):
                 _write_new_apkg([], [])
                 
                 mock_package.assert_called_once()
                 mock_package.return_value.write_to_file.assert_called_once()
-                mock_rename.assert_called_once()
+                mock_replace.assert_called_once()
                 
                 # Verify the default name is used
-                _, dst = mock_rename.call_args[0]
+                _, dst = mock_replace.call_args[0]
                 self.assertIn("default-", dst)
 
     def test_sanitize_filename_security(self):
