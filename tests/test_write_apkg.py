@@ -96,12 +96,17 @@ class TestWriteApkg(TestCase):
             "desc": "Test Description",
             "notes": [note]
         }
-        media_files = ['test.jpg', 'audio.mp3']
-        
+
         with tempfile.TemporaryDirectory() as tmpdir:
+            img_path = os.path.join(tmpdir, 'test.jpg')
+            audio_path = os.path.join(tmpdir, 'audio.mp3')
+            open(img_path, 'w').close()
+            open(audio_path, 'w').close()
+            media_files = [img_path, audio_path]
+
             with mock.patch('os.getcwd', return_value=tmpdir):
                 _write_new_apkg([deck_payload], media_files)
-                
+
                 mock_package.assert_called_once()
                 package_instance = mock_package.return_value
                 self.assertEqual(package_instance.media_files, media_files)
@@ -109,6 +114,28 @@ class TestWriteApkg(TestCase):
                 # Verify file operations
                 mock_package.return_value.write_to_file.assert_called_once()
                 mock_replace.assert_called_once()
+
+    @mock.patch('helpers.write_apkg.Package')
+    @mock.patch('helpers.write_apkg.os.replace')
+    def test_write_new_apkg_skips_missing_media(self, mock_replace, mock_package):
+        note = Note(model=self.test_model, fields=['Q1', 'A1'])
+        deck_payload = {
+            "id": 1234567890,
+            "name": "Test Deck",
+            "desc": "Test Description",
+            "notes": [note]
+        }
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            existing_path = os.path.join(tmpdir, 'exists.jpg')
+            open(existing_path, 'w').close()
+            media_files = [existing_path, 'image.png']
+
+            with mock.patch('os.getcwd', return_value=tmpdir):
+                _write_new_apkg([deck_payload], media_files)
+
+                package_instance = mock_package.return_value
+                self.assertEqual(package_instance.media_files, [existing_path])
 
     @mock.patch('helpers.write_apkg.Package')
     @mock.patch('helpers.write_apkg.os.replace')

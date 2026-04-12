@@ -146,7 +146,11 @@ def _write_new_apkg(deck_payloads, media_files):
     """
     decks, first_deck_id = create_decks(deck_payloads)
     package = Package(decks)
-    package.media_files = media_files
+    existing_media = [f for f in media_files if os.path.exists(f)]
+    if len(existing_media) < len(media_files):
+        missing = set(media_files) - set(existing_media)
+        print(f"Skipping {len(missing)} missing media file(s): {missing}", file=sys.stderr)
+    package.media_files = existing_media
 
     sanitized_name = sanitize_filename(deck_payloads[0]["name"]) if deck_payloads else "default"
     temp_path = write_package_to_temp_file(package)
