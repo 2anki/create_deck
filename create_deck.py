@@ -38,7 +38,7 @@ if __name__ == "__main__":
             decks = []
 
             if len(data) == 0:
-                sys.exit(1)
+                raise ValueError("No cards were generated. The page may be empty or contain no supported toggle lists.")
 
             # Model / Template stuff
             mt = data[0].get("settings", {})
