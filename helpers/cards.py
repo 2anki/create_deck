@@ -1,6 +1,7 @@
 """
 Helper functions for working with the flashcards
 """
+import sys
 import ftfy
 
 
@@ -14,12 +15,12 @@ def get_safe_value(value):
         try:
             value = value.decode('utf-8') # Decode bytes to string, handling potential errors
         except UnicodeDecodeError:
-            print("Warning: Could not decode bytes using utf-8. Returning empty string.")
+            print("Warning: Could not decode bytes using utf-8. Returning empty string.", file=sys.stderr)
             return ""
     elif value is None:
         return ""
     elif not isinstance(value, str):
-        print(f"Warning: get_safe_value received unexpected input type: {type(value)}. Returning empty string.")
+        print(f"Warning: get_safe_value received unexpected input type: {type(value)}. Returning empty string.", file=sys.stderr)
         return ""
 
     return ftfy.fixes.fix_surrogates(value)
