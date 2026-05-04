@@ -69,7 +69,7 @@ def write_package_to_temp_file(package):
     try:
         package.write_to_file(temp_path)
     except Exception as e:
-        print(f"Error writing to temporary file: {e}")
+        print(f"Error writing to temporary file: {e}", file=sys.stderr)
         raise
 
     return temp_path
