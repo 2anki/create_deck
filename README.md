@@ -1,6 +1,7 @@
 # create_deck
 
-> **Note:** This repository has been moved to [2anki/server](https://github.com/2anki/server/tree/main/create_deck). Please use that location for the latest code and to report issues.
+> [!IMPORTANT]
+> This repository has been moved to [2anki/server](https://github.com/2anki/server/tree/main/create_deck). Please use that location for the latest code and to report issues.
 
 This module is responsible for creating Anki flashcards for 2anki.net.
 You can report issues in the [server](https://github.com/2anki/server/issues) repository.
